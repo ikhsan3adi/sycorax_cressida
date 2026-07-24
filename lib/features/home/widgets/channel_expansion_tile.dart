@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sycorax_cressida/data/models/channel.dart';
 import 'package:sycorax_cressida/data/models/channel_stream.dart';
-import 'package:sycorax_cressida/features/home/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/feed_list_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/loading.dart';
 

@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 
-class ThemeNotifier extends AsyncNotifier<ThemeMode> {
+final themeModeProvider = AsyncNotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);
+
+class ThemeModeNotifier extends AsyncNotifier<ThemeMode> {
   static const String key = 'theme_mode';
 
   @override

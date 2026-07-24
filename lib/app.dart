@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sycorax_cressida/features/settings/providers.dart';
+import 'package:sycorax_cressida/features/settings/providers/theme_mode_provider.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/core/theme.dart';
-import 'package:sycorax_cressida/core/util.dart';
 import 'package:sycorax_cressida/core/router.dart';
 
 class SycoraxCressidaApp extends ConsumerWidget {
@@ -19,7 +18,7 @@ class SycoraxCressidaApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: theme.light(),
       darkTheme: theme.dark(),
-      themeMode: ref.watch(themeProvider).value,
+      themeMode: ref.watch(themeModeProvider).value,
       routerConfig: router,
     );
   }

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/database/database.dart';
-import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/database/daos/channel_dao.dart';
 import 'package:sycorax_cressida/data/models/channel.dart' as domain;
 
@@ -46,7 +46,7 @@ class FavoriteDao {
           .insert(
             FavoritesCompanion.insert(
               channelId: channelId,
-              addedAt: AppConstants.nowSeconds(),
+              addedAt: Utils.nowSeconds(),
             ),
           );
     }

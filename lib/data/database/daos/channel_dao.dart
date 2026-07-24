@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/database/database.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/models/channel.dart' as domain;
@@ -11,7 +12,7 @@ class ChannelDao {
     String? country,
     String? category,
     String? search,
-    int limit = AppConstants.pageLimit,
+    int limit = Constants.pageLimit,
     int offset = 0,
   }) async {
     final rows =
@@ -61,7 +62,7 @@ class ChannelDao {
     List<domain.Channel> channels, {
     int? syncedAt,
   }) async {
-    final now = syncedAt ?? AppConstants.nowSeconds();
+    final now = syncedAt ?? Utils.nowSeconds();
     await _db.batch((batch) {
       for (final ch in channels) {
         batch.insert(

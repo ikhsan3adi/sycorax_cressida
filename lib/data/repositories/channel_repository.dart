@@ -1,3 +1,4 @@
+import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/api/iptv_client.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/database/daos/channel_dao.dart';
@@ -31,7 +32,7 @@ class ChannelRepository {
     String? country,
     String? category,
     String? search,
-    int limit = AppConstants.pageLimit,
+    int limit = Constants.pageLimit,
     int offset = 0,
   }) async {
     await _maybeSync();
@@ -87,7 +88,7 @@ class ChannelRepository {
     final stale = await _isStale();
     if (!stale) return;
 
-    _syncInProgress = _syncAll(AppConstants.nowSeconds());
+    _syncInProgress = _syncAll(Utils.nowSeconds());
     try {
       await _syncInProgress;
     } finally {
@@ -98,7 +99,7 @@ class ChannelRepository {
   Future<bool> _isStale() async {
     final lastSync = await _channelDao.getLastSyncTime();
     if (lastSync == null) return true;
-    final cutoff = AppConstants.nowSeconds() - AppConstants.cacheTtlSeconds;
+    final cutoff = Utils.nowSeconds() - Constants.cacheTtlSeconds;
     return lastSync < cutoff;
   }
 

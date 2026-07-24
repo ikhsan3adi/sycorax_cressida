@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/loading.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
-import 'package:sycorax_cressida/features/home/providers.dart';
 
 class ChannelList extends ConsumerStatefulWidget {
   const ChannelList({super.key});
@@ -52,7 +52,7 @@ class _ChannelListState extends ConsumerState<ChannelList> {
       onNotification: (scroll) {
         if (scroll is ScrollEndNotification &&
             scroll.metrics.pixels >=
-                scroll.metrics.maxScrollExtent - AppConstants.scrollThreshold) {
+                scroll.metrics.maxScrollExtent - Constants.scrollThreshold) {
           ref.read(channelListProvider.notifier).loadMore();
         }
         return false;

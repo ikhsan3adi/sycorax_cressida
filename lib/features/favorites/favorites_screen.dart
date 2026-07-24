@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/data/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/shared/widgets/channel_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/loading.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
-import 'package:sycorax_cressida/features/home/providers.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sycorax_cressida/core/constants.dart';
-import 'package:sycorax_cressida/features/settings/providers.dart';
+import 'package:sycorax_cressida/features/settings/providers/theme_mode_provider.dart';
 
 class SettingsDrawer extends ConsumerWidget {
   const SettingsDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeModeAsync = ref.watch(themeProvider);
+    final themeModeAsync = ref.watch(themeModeProvider);
 
     return Drawer(
       child: SafeArea(
@@ -58,7 +58,7 @@ class SettingsDrawer extends ConsumerWidget {
                       selected: {mode},
                       onSelectionChanged: (Set<ThemeMode> newSelection) {
                         ref
-                            .read(themeProvider.notifier)
+                            .read(themeModeProvider.notifier)
                             .setThemeMode(newSelection.first);
                       },
                     ),

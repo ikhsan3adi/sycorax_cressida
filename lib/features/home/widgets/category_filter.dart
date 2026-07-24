@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sycorax_cressida/features/home/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_filter_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 
 class CategoryFilter extends ConsumerWidget {
   const CategoryFilter({super.key});
