@@ -26,9 +26,14 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
         feedStreamsProvider(feedId),
         (previous, next) {
           if (!next.isLoading && next.hasValue && next.value!.isNotEmpty) {
-            final wasEmpty = previous == null || previous.isLoading || (previous.hasValue && previous.value!.isEmpty);
+            final wasEmpty =
+                previous == null ||
+                previous.isLoading ||
+                (previous.hasValue && previous.value!.isEmpty);
             if (wasEmpty) {
-              ref.read(playerStateProvider.notifier).playStream(next.value!.first, channelName);
+              ref
+                  .read(playerStateProvider.notifier)
+                  .playStream(next.value!.first, channelName);
             }
           }
         },
@@ -137,7 +142,12 @@ class _StreamTile extends ConsumerWidget {
       ),
       title: Text(stream.title.isNotEmpty ? stream.title : 'Stream'),
       subtitle: stream.quality != null || stream.label != null
-          ? Text([stream.quality, stream.label].where((e) => e != null).join(' · '))
+          ? Text(
+              [
+                stream.quality,
+                stream.label,
+              ].where((e) => e != null).join(' · '),
+            )
           : null,
       selected: isPlaying,
       onTap: () {

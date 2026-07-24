@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/features/settings/widgets/settings_drawer.dart';
 
 class ShellScaffold extends StatelessWidget {
@@ -10,9 +11,7 @@ class ShellScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sycorax Cressida'),
-      ),
+      appBar: AppBar(title: const Text(AppConstants.appName)),
       drawer: const SettingsDrawer(),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(

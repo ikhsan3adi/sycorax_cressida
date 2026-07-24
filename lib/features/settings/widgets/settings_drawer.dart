@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/features/settings/providers.dart';
 
 class SettingsDrawer extends ConsumerWidget {
@@ -24,7 +25,10 @@ class SettingsDrawer extends ConsumerWidget {
             const Divider(),
             themeModeAsync.when(
               data: (mode) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -53,7 +57,9 @@ class SettingsDrawer extends ConsumerWidget {
                       ],
                       selected: {mode},
                       onSelectionChanged: (Set<ThemeMode> newSelection) {
-                        ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
+                        ref
+                            .read(themeProvider.notifier)
+                            .setThemeMode(newSelection.first);
                       },
                     ),
                   ],
@@ -66,7 +72,7 @@ class SettingsDrawer extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Sycorax Cressida v1.0.0',
+                '${AppConstants.appName} v${AppConstants.appVersion}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.outline,
                 ),

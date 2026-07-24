@@ -30,8 +30,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _player = Player();
     _controller = VideoController(_player);
 
-    _playerSubscription = ref.listenManual(playerStateProvider, (previous, next) {
-      if (next.currentStream != null && previous?.currentStream?.url != next.currentStream?.url) {
+    _playerSubscription = ref.listenManual(playerStateProvider, (
+      previous,
+      next,
+    ) {
+      if (next.currentStream != null &&
+          previous?.currentStream?.url != next.currentStream?.url) {
         _player.open(Media(next.currentStream!.url));
       } else if (next.currentStream == null) {
         _player.stop();
@@ -112,4 +116,3 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
-

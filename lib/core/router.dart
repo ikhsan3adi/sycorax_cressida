@@ -6,7 +6,9 @@ import 'package:sycorax_cressida/shared/widgets/shell_scaffold.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _homeNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'home');
-final _favoritesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'favorites');
+final _favoritesNavigatorKey = GlobalKey<NavigatorState>(
+  debugLabel: 'favorites',
+);
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,

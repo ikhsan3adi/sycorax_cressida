@@ -11,11 +11,7 @@ class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
   final Widget? trailing;
 
-  const ChannelExpansionTile({
-    super.key,
-    required this.channel,
-    this.trailing,
-  });
+  const ChannelExpansionTile({super.key, required this.channel, this.trailing});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +33,8 @@ class ChannelExpansionTile extends ConsumerWidget {
       subtitle: channel.categories.isNotEmpty || channel.country != null
           ? Text(
               [
-                if (channel.categories.isNotEmpty) channel.categories.join(', '),
+                if (channel.categories.isNotEmpty)
+                  channel.categories.join(', '),
                 if (channel.country != null) channel.country!,
               ].join(' · '),
               maxLines: 1,
@@ -45,9 +42,7 @@ class ChannelExpansionTile extends ConsumerWidget {
             )
           : null,
       trailing: trailing,
-      children: [
-        _ChannelDetails(channel: channel),
-      ],
+      children: [_ChannelDetails(channel: channel)],
     );
   }
 }
@@ -65,17 +60,25 @@ class _ChannelDetails extends ConsumerWidget {
         if (feeds.length > 1) {
           // Kasus A: feed > 1 -> tampil daftar feed
           return Column(
-            children: feeds.map((feed) => FeedListTile(
-              feed: feed,
-              onTap: () {
-                ref.read(homeContentProvider.notifier).setStreamsMode(
-                  channelId: channel.id,
-                  channelName: channel.name,
-                  feedId: feed.id,
-                  feedName: feed.name.isNotEmpty ? feed.name : 'Default Feed',
-                );
-              },
-            )).toList(),
+            children: feeds
+                .map(
+                  (feed) => FeedListTile(
+                    feed: feed,
+                    onTap: () {
+                      ref
+                          .read(homeContentProvider.notifier)
+                          .setStreamsMode(
+                            channelId: channel.id,
+                            channelName: channel.name,
+                            feedId: feed.id,
+                            feedName: feed.name.isNotEmpty
+                                ? feed.name
+                                : 'Default Feed',
+                          );
+                    },
+                  ),
+                )
+                .toList(),
           );
         } else {
           // Kasus B: feed <= 1 -> langsung tampil streams
@@ -89,10 +92,14 @@ class _ChannelDetails extends ConsumerWidget {
                 );
               }
               return Column(
-                children: streams.map((stream) => _InlineStreamTile(
-                  stream: stream,
-                  channelName: channel.name,
-                )).toList(),
+                children: streams
+                    .map(
+                      (stream) => _InlineStreamTile(
+                        stream: stream,
+                        channelName: channel.name,
+                      ),
+                    )
+                    .toList(),
               );
             },
             loading: () => const Padding(
@@ -106,10 +113,8 @@ class _ChannelDetails extends ConsumerWidget {
           );
         }
       },
-      loading: () => const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: LoadingWidget(),
-      ),
+      loading: () =>
+          const Padding(padding: EdgeInsets.all(16.0), child: LoadingWidget()),
       error: (e, _) => Padding(
         padding: const EdgeInsets.all(16.0),
         child: Text('Error loading feeds: $e'),
@@ -137,7 +142,12 @@ class _InlineStreamTile extends ConsumerWidget {
       ),
       title: Text(stream.title.isNotEmpty ? stream.title : 'Stream'),
       subtitle: stream.quality != null || stream.label != null
-          ? Text([stream.quality, stream.label].where((e) => e != null).join(' · '))
+          ? Text(
+              [
+                stream.quality,
+                stream.label,
+              ].where((e) => e != null).join(' · '),
+            )
           : null,
       selected: isPlaying,
       onTap: () {

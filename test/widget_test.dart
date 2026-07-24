@@ -32,8 +32,6 @@ class FakeIptvClient extends IptvClient {
   Future<List<Category>> getCategories() async => [];
 }
 
-
-
 void main() {
   MediaKit.ensureInitialized();
   testWidgets('App renders home screen', (WidgetTester tester) async {

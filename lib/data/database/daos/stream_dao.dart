@@ -14,13 +14,14 @@ class StreamDao {
     return rows.map(_mapRow).toList();
   }
 
-  Future<List<domain.ChannelStream>> getStreamsByChannel(String channelId) async {
+  Future<List<domain.ChannelStream>> getStreamsByChannel(
+    String channelId,
+  ) async {
     final rows = await (_db.select(
       _db.streams,
     )..where((t) => t.channelId.equals(channelId))).get();
     return rows.map(_mapRow).toList();
   }
-
 
   Future<void> upsertStreams(List<domain.ChannelStream> streams) async {
     await _db.delete(_db.streams).go();

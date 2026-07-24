@@ -59,7 +59,6 @@ class ChannelRepository {
     return _streamDao.getStreamsByChannel(channelId);
   }
 
-
   Future<Channel?> getChannel(String id) async {
     await _maybeSync();
     return _channelDao.getChannel(id);
@@ -113,8 +112,13 @@ class ChannelRepository {
     final categoriesF = _client.getCategories();
 
     await Future.wait([
-      channelsF, feedsF, logosF, streamsF,
-      countriesF, languagesF, categoriesF,
+      channelsF,
+      feedsF,
+      logosF,
+      streamsF,
+      countriesF,
+      languagesF,
+      categoriesF,
     ]);
 
     final channels = await channelsF;

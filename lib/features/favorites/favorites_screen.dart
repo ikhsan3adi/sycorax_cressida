@@ -38,13 +38,17 @@ class FavoritesScreen extends ConsumerWidget {
                 final repo = ref.read(channelRepositoryProvider);
                 final streams = await repo.getStreamsByChannel(channel.id);
                 if (streams.isNotEmpty && context.mounted) {
-                  ref.read(playerStateProvider.notifier).playStream(streams.first, channel.name);
+                  ref
+                      .read(playerStateProvider.notifier)
+                      .playStream(streams.first, channel.name);
                 } else {
                   final feeds = await repo.getFeeds(channel.id);
                   if (feeds.isNotEmpty) {
                     final feedStreams = await repo.getStreams(feeds.first.id);
                     if (feedStreams.isNotEmpty && context.mounted) {
-                      ref.read(playerStateProvider.notifier).playStream(feedStreams.first, channel.name);
+                      ref
+                          .read(playerStateProvider.notifier)
+                          .playStream(feedStreams.first, channel.name);
                     }
                   }
                 }
@@ -77,4 +81,3 @@ class FavoritesScreen extends ConsumerWidget {
     );
   }
 }
-

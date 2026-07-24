@@ -197,18 +197,16 @@ class HomeContentNotifier extends Notifier<HomeContentState> {
   }
 }
 
-final homeContentProvider = NotifierProvider<HomeContentNotifier, HomeContentState>(
-  HomeContentNotifier.new,
-);
+final homeContentProvider =
+    NotifierProvider<HomeContentNotifier, HomeContentState>(
+      HomeContentNotifier.new,
+    );
 
 class PlayerState {
   final ChannelStream? currentStream;
   final String? channelName;
 
-  const PlayerState({
-    this.currentStream,
-    this.channelName,
-  });
+  const PlayerState({this.currentStream, this.channelName});
 }
 
 class PlayerStateNotifier extends Notifier<PlayerState> {
@@ -228,8 +226,6 @@ final playerStateProvider = NotifierProvider<PlayerStateNotifier, PlayerState>(
   PlayerStateNotifier.new,
 );
 
-
-
 final channelFeedsProvider = FutureProvider.family<List<ChannelFeed>, String>((
   ref,
   channelId,
@@ -246,10 +242,8 @@ final feedStreamsProvider = FutureProvider.family<List<ChannelStream>, String>((
   return repo.getStreams(feedId);
 });
 
-final channelStreamsProvider = FutureProvider.family<List<ChannelStream>, String>((
-  ref,
-  channelId,
-) async {
-  final repo = ref.watch(channelRepositoryProvider);
-  return repo.getStreamsByChannel(channelId);
-});
+final channelStreamsProvider =
+    FutureProvider.family<List<ChannelStream>, String>((ref, channelId) async {
+      final repo = ref.watch(channelRepositoryProvider);
+      return repo.getStreamsByChannel(channelId);
+    });

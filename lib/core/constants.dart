@@ -1,6 +1,7 @@
 class AppConstants {
   static const String iptvApiBaseUrl = 'https://iptv-org.github.io/api';
   static const String appName = 'Sycorax Cressida';
+  static const String appVersion = '1.0.0';
   static const String dbName = 'sycorax_cressida.sqlite';
 
   static const int pageLimit = 50;
