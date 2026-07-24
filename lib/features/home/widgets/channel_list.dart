@@ -19,7 +19,9 @@ class _ChannelListState extends ConsumerState<ChannelList> {
   @override
   void initState() {
     super.initState();
-    ref.read(channelListProvider.notifier).init();
+    Future(() {
+      if (mounted) ref.read(channelListProvider.notifier).init();
+    });
   }
 
   @override

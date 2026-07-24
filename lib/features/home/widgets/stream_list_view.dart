@@ -33,9 +33,13 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                 previous.isLoading ||
                 (previous.hasValue && previous.value!.isEmpty);
             if (wasEmpty) {
-              ref
-                  .read(playerStateProvider.notifier)
-                  .playStream(next.value!.first, channelName);
+              Future(() {
+                if (mounted) {
+                  ref
+                      .read(playerStateProvider.notifier)
+                      .playStream(next.value!.first, channelName);
+                }
+              });
             }
           }
         },

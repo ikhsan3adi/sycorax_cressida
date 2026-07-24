@@ -41,7 +41,7 @@ dependencies:
   google_fonts: ^8.2.0
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
-  media_kit_native_event_loop: ^1.0.9
+  media_kit_libs_video: ^1.0.7
   drift: ^2.24.0
   sqlite3: ^2.7.0
   sqlite3_flutter_libs: ^0.5.0
