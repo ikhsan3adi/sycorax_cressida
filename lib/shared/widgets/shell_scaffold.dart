@@ -11,7 +11,10 @@ class ShellScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(AppConstants.appName)),
+      appBar: AppBar(
+        title: const Text(AppConstants.appName),
+        centerTitle: true,
+      ),
       drawer: const SettingsDrawer(),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
@@ -29,8 +32,8 @@ class ShellScaffold extends StatelessWidget {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite_outline),
-            selectedIcon: Icon(Icons.favorite),
+            icon: Icon(Icons.star_border),
+            selectedIcon: Icon(Icons.star),
             label: 'Favorites',
           ),
         ],

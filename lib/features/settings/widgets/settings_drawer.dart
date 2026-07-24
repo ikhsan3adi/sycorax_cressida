@@ -38,21 +38,27 @@ class SettingsDrawer extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     SegmentedButton<ThemeMode>(
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: ThemeMode.system,
-                          label: Text('System'),
-                          icon: Icon(Icons.brightness_auto),
+                          label: mode == ThemeMode.system
+                              ? const Text('System')
+                              : null,
+                          icon: const Icon(Icons.brightness_auto),
                         ),
                         ButtonSegment(
                           value: ThemeMode.light,
-                          label: Text('Light'),
-                          icon: Icon(Icons.light_mode),
+                          label: mode == ThemeMode.light
+                              ? const Text('Light')
+                              : null,
+                          icon: const Icon(Icons.light_mode),
                         ),
                         ButtonSegment(
                           value: ThemeMode.dark,
-                          label: Text('Dark'),
-                          icon: Icon(Icons.dark_mode),
+                          label: mode == ThemeMode.dark
+                              ? const Text('Dark')
+                              : null,
+                          icon: const Icon(Icons.dark_mode),
                         ),
                       ],
                       selected: {mode},

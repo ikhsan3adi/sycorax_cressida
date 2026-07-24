@@ -89,7 +89,7 @@ class _FavoriteButton extends ConsumerWidget {
     return isFav.when(
       data: (fav) => IconButton(
         icon: Icon(
-          fav ? Icons.favorite : Icons.favorite_border,
+          fav ? Icons.star : Icons.star_border,
           color: fav ? Colors.red : null,
         ),
         onPressed: () async {
