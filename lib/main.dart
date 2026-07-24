@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
@@ -13,13 +16,16 @@ void main() async {
   final db = await AppDatabase.create();
   final prefs = await SharedPreferences.getInstance();
 
-  runApp(
-    ProviderScope(
-      overrides: [
-        appDatabaseProvider.overrideWithValue(db),
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
-      child: const SycoraxCressidaApp(),
+  runZonedGuarded(
+    () => runApp(
+      ProviderScope(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
+        child: const SycoraxCressidaApp(),
+      ),
     ),
+    (error, stackTrace) => log('$error\n$stackTrace\n'),
   );
 }

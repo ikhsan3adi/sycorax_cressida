@@ -26,7 +26,7 @@ class FavoritesScreen extends ConsumerWidget {
             return ChannelTile(
               channel: channel,
               trailing: IconButton(
-                icon: const Icon(Icons.star, color: Colors.red),
+                icon: const Icon(Icons.thumb_up, color: Colors.red),
                 onPressed: () async {
                   await ref
                       .read(favoritesRepositoryProvider)

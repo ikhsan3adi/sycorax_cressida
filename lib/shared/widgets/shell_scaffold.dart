@@ -1,21 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/core/constants.dart';
-import 'package:sycorax_cressida/features/settings/widgets/settings_drawer.dart';
 
 class ShellScaffold extends StatelessWidget {
+  const ShellScaffold({super.key, required this.navigationShell});
+
   final StatefulNavigationShell navigationShell;
 
-  const ShellScaffold({super.key, required this.navigationShell});
+  final List<NavigationDestination> destinations = const [
+    NavigationDestination(
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.thumb_up_outlined),
+      selectedIcon: Icon(Icons.thumb_up),
+      label: 'Favorites',
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.settings_outlined),
+      selectedIcon: Icon(Icons.settings),
+      label: 'Settings',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppConstants.appName),
+        title: Text(
+          navigationShell.currentIndex == 0
+              ? AppConstants.appName
+              : destinations[navigationShell.currentIndex].label,
+        ),
         centerTitle: true,
       ),
-      drawer: const SettingsDrawer(),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
@@ -25,18 +45,7 @@ class ShellScaffold extends StatelessWidget {
             initialLocation: index == navigationShell.currentIndex,
           );
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.star_border),
-            selectedIcon: Icon(Icons.star),
-            label: 'Favorites',
-          ),
-        ],
+        destinations: destinations,
       ),
     );
   }
