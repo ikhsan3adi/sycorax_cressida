@@ -1,52 +1,138 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_filter_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 
-class ShellScaffold extends StatelessWidget {
+class _IsSearchActive extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void set(bool value) => state = value;
+}
+
+final isSearchActiveProvider = NotifierProvider<_IsSearchActive, bool>(
+  _IsSearchActive.new,
+);
+
+const _destinations = [
+  NavigationDestination(
+    icon: Icon(Icons.home_outlined),
+    selectedIcon: Icon(Icons.home),
+    label: 'Home',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.thumb_up_outlined),
+    selectedIcon: Icon(Icons.thumb_up),
+    label: 'Favorites',
+  ),
+  NavigationDestination(
+    icon: Icon(Icons.settings_outlined),
+    selectedIcon: Icon(Icons.settings),
+    label: 'Settings',
+  ),
+];
+
+const _titles = [AppConstants.appName, 'Favorites', 'Settings'];
+
+class ShellScaffold extends ConsumerStatefulWidget {
   const ShellScaffold({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  final List<NavigationDestination> destinations = const [
-    NavigationDestination(
-      icon: Icon(Icons.home_outlined),
-      selectedIcon: Icon(Icons.home),
-      label: 'Home',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.thumb_up_outlined),
-      selectedIcon: Icon(Icons.thumb_up),
-      label: 'Favorites',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.settings_outlined),
-      selectedIcon: Icon(Icons.settings),
-      label: 'Settings',
-    ),
-  ];
+  @override
+  ConsumerState<ShellScaffold> createState() => _ShellScaffoldState();
+}
+
+class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isSearchActive = ref.watch(isSearchActiveProvider);
+    final isHome = widget.navigationShell.currentIndex == 0;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          navigationShell.currentIndex == 0
-              ? AppConstants.appName
-              : destinations[navigationShell.currentIndex].label,
-        ),
-        centerTitle: true,
-      ),
-      body: navigationShell,
+      appBar: isHome && isSearchActive ? _searchAppBar() : _normalAppBar(),
+      body: widget.navigationShell,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: widget.navigationShell.currentIndex,
         onDestinationSelected: (index) {
-          navigationShell.goBranch(
+          widget.navigationShell.goBranch(
             index,
-            initialLocation: index == navigationShell.currentIndex,
+            initialLocation: index == widget.navigationShell.currentIndex,
           );
         },
-        destinations: destinations,
+        destinations: _destinations,
       ),
+    );
+  }
+
+  AppBar _normalAppBar() {
+    final index = widget.navigationShell.currentIndex;
+    return AppBar(
+      title: Text(_titles[index]),
+      centerTitle: true,
+      actions: index == 0
+          ? [
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () =>
+                    ref.read(isSearchActiveProvider.notifier).set(true),
+              ),
+            ]
+          : null,
+    );
+  }
+
+  AppBar _searchAppBar() {
+    return AppBar(
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          _searchController.clear();
+          ref.read(isSearchActiveProvider.notifier).set(false);
+          ref.read(searchQueryProvider.notifier).update('');
+          ref.read(channelListProvider.notifier).refresh();
+        },
+      ),
+      title: TextField(
+        controller: _searchController,
+        autofocus: true,
+        decoration: const InputDecoration(
+          hintText: 'Search channels...',
+          border: InputBorder.none,
+          filled: false,
+        ),
+        onChanged: (value) {
+          _debounce?.cancel();
+          _debounce = Timer(const Duration(milliseconds: 300), () {
+            ref.read(searchQueryProvider.notifier).update(value);
+            ref.read(channelListProvider.notifier).refresh();
+          });
+        },
+      ),
+      actions: [
+        if (_searchController.text.isNotEmpty)
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () {
+              _searchController.clear();
+              ref.read(searchQueryProvider.notifier).update('');
+              ref.read(channelListProvider.notifier).refresh();
+            },
+          ),
+      ],
     );
   }
 }

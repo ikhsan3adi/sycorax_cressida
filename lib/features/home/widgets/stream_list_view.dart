@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sycorax_cressida/data/models/channel.dart';
+import 'package:sycorax_cressida/data/models/channel_stream.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
-import 'package:sycorax_cressida/data/models/channel_stream.dart';
 
 class StreamListView extends ConsumerStatefulWidget {
   const StreamListView({super.key});
@@ -21,9 +22,8 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
     super.initState();
     final state = ref.read(homeContentProvider);
     final feedId = state.selectedFeedId;
-    final channelName = state.selectedChannelName ?? 'Unknown Channel';
 
-    if (feedId != null) {
+    if (feedId != null && state.channel != null) {
       _streamsSub = ref.listenManual<AsyncValue<List<ChannelStream>>>(
         feedStreamsProvider(feedId),
         (previous, next) {
@@ -37,7 +37,7 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                 if (mounted) {
                   ref
                       .read(playerStateProvider.notifier)
-                      .playStream(next.value!.first, channelName);
+                      .playStream(next.value!.first, state.channel!);
                 }
               });
             }
@@ -58,9 +58,8 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
   Widget build(BuildContext context) {
     final state = ref.watch(homeContentProvider);
     final feedId = state.selectedFeedId;
-    final channelName = state.selectedChannelName ?? 'Unknown Channel';
 
-    if (feedId == null) {
+    if (feedId == null || state.channel == null) {
       return const Center(child: Text('No feed selected'));
     }
 
@@ -80,7 +79,7 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                 itemCount: streams.length,
                 itemBuilder: (context, index) {
                   final stream = streams[index];
-                  return _StreamTile(stream: stream, channelName: channelName);
+                  return _StreamTile(stream: stream, channel: state.channel!);
                 },
               );
             },
@@ -110,7 +109,7 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  state.selectedChannelName ?? 'Unknown Channel',
+                  state.channel?.name ?? 'Unknown Channel',
                   style: Theme.of(context).textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -132,9 +131,9 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
 
 class _StreamTile extends ConsumerWidget {
   final ChannelStream stream;
-  final String channelName;
+  final Channel channel;
 
-  const _StreamTile({required this.stream, required this.channelName});
+  const _StreamTile({required this.stream, required this.channel});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -157,7 +156,7 @@ class _StreamTile extends ConsumerWidget {
           : null,
       selected: isPlaying,
       onTap: () {
-        ref.read(playerStateProvider.notifier).playStream(stream, channelName);
+        ref.read(playerStateProvider.notifier).playStream(stream, channel);
       },
     );
   }

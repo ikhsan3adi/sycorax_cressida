@@ -9,7 +9,9 @@ import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.da
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class ChannelList extends ConsumerStatefulWidget {
-  const ChannelList({super.key});
+  final bool shrinkWrap;
+
+  const ChannelList({super.key, this.shrinkWrap = false});
 
   @override
   ConsumerState<ChannelList> createState() => _ChannelListState();
@@ -50,6 +52,42 @@ class _ChannelListState extends ConsumerState<ChannelList> {
       );
     }
 
+    final listView = ListView.builder(
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+      itemCount: state.channels.length + (state.isLoading ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index >= state.channels.length) {
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final channel = state.channels[index];
+        final isFav = ref.watch(isFavoriteProvider(channel.id));
+
+        return ChannelExpansionTile(
+          channel: channel,
+          trailing: isFav.when(
+            data: (fav) => FavoriteButton(
+              isFavorite: fav,
+              onPressed: () async {
+                await ref
+                    .read(favoritesRepositoryProvider)
+                    .toggleFavorite(channel.id);
+                ref.invalidate(isFavoriteProvider(channel.id));
+                ref.invalidate(favoritesListProvider);
+              },
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
+          ),
+        );
+      },
+    );
+
+    if (widget.shrinkWrap) return listView;
+
     return NotificationListener<ScrollNotification>(
       onNotification: (scroll) {
         if (scroll is ScrollEndNotification &&
@@ -59,37 +97,7 @@ class _ChannelListState extends ConsumerState<ChannelList> {
         }
         return false;
       },
-      child: ListView.builder(
-        itemCount: state.channels.length + (state.isLoading ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= state.channels.length) {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          final channel = state.channels[index];
-          final isFav = ref.watch(isFavoriteProvider(channel.id));
-
-          return ChannelExpansionTile(
-            channel: channel,
-            trailing: isFav.when(
-              data: (fav) => FavoriteButton(
-                isFavorite: fav,
-                onPressed: () async {
-                  await ref
-                      .read(favoritesRepositoryProvider)
-                      .toggleFavorite(channel.id);
-                  ref.invalidate(isFavoriteProvider(channel.id));
-                  ref.invalidate(favoritesListProvider);
-                },
-              ),
-              loading: () => const SizedBox.shrink(),
-              error: (_, _) => const SizedBox.shrink(),
-            ),
-          );
-        },
-      ),
+      child: listView,
     );
   }
 }

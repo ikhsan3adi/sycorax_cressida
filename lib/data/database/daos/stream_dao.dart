@@ -20,7 +20,8 @@ class StreamDao {
     final rows = await (_db.select(
       _db.streams,
     )..where((t) => t.channelId.equals(channelId))).get();
-    return rows.map(_mapRow).toList();
+    final seen = <String>{};
+    return rows.where((r) => seen.add(r.url)).map(_mapRow).toList();
   }
 
   Future<void> upsertStreams(List<domain.ChannelStream> streams) async {

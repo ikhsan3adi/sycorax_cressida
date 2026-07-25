@@ -1,3 +1,5 @@
+import 'dart:ui' show Size;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
@@ -35,6 +37,13 @@ class FakeIptvClient extends IptvClient {
 void main() {
   MediaKit.ensureInitialized();
   testWidgets('App renders home screen', (WidgetTester tester) async {
+    addTearDown(() {
+      tester.binding.window.clearPhysicalSizeTestValue();
+      tester.binding.window.clearDevicePixelRatioTestValue();
+    });
+    tester.binding.window.physicalSizeTestValue = const Size(1080, 2340);
+    tester.binding.window.devicePixelRatioTestValue = 2.0;
+
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
 

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sycorax_cressida/data/models/channel.dart';
 
 final homeContentProvider =
     NotifierProvider<HomeContentNotifier, HomeContentState>(
@@ -14,15 +15,13 @@ class HomeContentNotifier extends Notifier<HomeContentState> {
   }
 
   void setStreamsMode({
-    required String channelId,
-    required String channelName,
+    required Channel channel,
     required String feedId,
     required String feedName,
   }) {
     state = HomeContentState(
       mode: HomeContentMode.streams,
-      selectedChannelId: channelId,
-      selectedChannelName: channelName,
+      channel: channel,
       selectedFeedId: feedId,
       selectedFeedName: feedName,
     );
@@ -33,32 +32,38 @@ enum HomeContentMode { browse, streams }
 
 class HomeContentState {
   final HomeContentMode mode;
-  final String? selectedChannelId;
-  final String? selectedChannelName;
+  final Channel? channel;
   final String? selectedFeedId;
   final String? selectedFeedName;
 
   const HomeContentState({
     this.mode = HomeContentMode.browse,
-    this.selectedChannelId,
-    this.selectedChannelName,
+    this.channel,
     this.selectedFeedId,
     this.selectedFeedName,
   });
 
   HomeContentState copyWith({
     HomeContentMode? mode,
-    String? selectedChannelId,
-    String? selectedChannelName,
+    Channel? channel,
     String? selectedFeedId,
     String? selectedFeedName,
   }) {
     return HomeContentState(
       mode: mode ?? this.mode,
-      selectedChannelId: selectedChannelId ?? this.selectedChannelId,
-      selectedChannelName: selectedChannelName ?? this.selectedChannelName,
+      channel: channel ?? this.channel,
       selectedFeedId: selectedFeedId ?? this.selectedFeedId,
       selectedFeedName: selectedFeedName ?? this.selectedFeedName,
     );
   }
 }
+
+class _IsPlayerMinimized extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void set(bool value) => state = value;
+}
+
+final isPlayerMinimizedProvider = NotifierProvider<_IsPlayerMinimized, bool>(
+  _IsPlayerMinimized.new,
+);

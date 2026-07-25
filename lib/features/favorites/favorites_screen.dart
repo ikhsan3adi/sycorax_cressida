@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/data/providers.dart';
-import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/features/favorites/widgets/channel_tile.dart';
+import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 
@@ -23,8 +22,9 @@ class FavoritesScreen extends ConsumerWidget {
           itemCount: channels.length,
           itemBuilder: (context, index) {
             final channel = channels[index];
-            return ChannelTile(
+            return ChannelExpansionTile(
               channel: channel,
+              onPlayStream: () => context.go('/'),
               trailing: FavoriteButton(
                 isFavorite: true,
                 onPressed: () async {
@@ -34,28 +34,6 @@ class FavoritesScreen extends ConsumerWidget {
                   ref.invalidate(favoritesListProvider);
                 },
               ),
-              onTap: () async {
-                final repo = ref.read(channelRepositoryProvider);
-                final streams = await repo.getStreamsByChannel(channel.id);
-                if (streams.isNotEmpty && context.mounted) {
-                  ref
-                      .read(playerStateProvider.notifier)
-                      .playStream(streams.first, channel.name);
-                } else {
-                  final feeds = await repo.getFeeds(channel.id);
-                  if (feeds.isNotEmpty) {
-                    final feedStreams = await repo.getStreams(feeds.first.id);
-                    if (feedStreams.isNotEmpty && context.mounted) {
-                      ref
-                          .read(playerStateProvider.notifier)
-                          .playStream(feedStreams.first, channel.name);
-                    }
-                  }
-                }
-                if (context.mounted) {
-                  context.go('/');
-                }
-              },
             );
           },
         );

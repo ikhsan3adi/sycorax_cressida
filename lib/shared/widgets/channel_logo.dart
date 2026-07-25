@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:sycorax_cressida/data/models/channel.dart';
 
 class ChannelLogoImage extends StatelessWidget {
-  const ChannelLogoImage({super.key, required this.channel});
+  const ChannelLogoImage({super.key, this.imageUrl});
 
-  final Channel channel;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class ChannelLogoImage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: CachedNetworkImage(
-            imageUrl: channel.logoUrl ?? '',
+            imageUrl: imageUrl ?? '',
             width: 54,
             height: 54,
             fit: BoxFit.contain,

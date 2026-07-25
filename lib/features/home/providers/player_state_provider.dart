@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sycorax_cressida/data/models/channel.dart';
 import 'package:sycorax_cressida/data/models/channel_stream.dart';
 
 final playerStateProvider = NotifierProvider<PlayerStateNotifier, PlayerState>(
@@ -9,8 +10,8 @@ class PlayerStateNotifier extends Notifier<PlayerState> {
   @override
   PlayerState build() => const PlayerState();
 
-  void playStream(ChannelStream stream, String channelName) {
-    state = PlayerState(currentStream: stream, channelName: channelName);
+  void playStream(ChannelStream stream, Channel channel) {
+    state = PlayerState(currentStream: stream, channel: channel);
   }
 
   void stop() {
@@ -20,7 +21,7 @@ class PlayerStateNotifier extends Notifier<PlayerState> {
 
 class PlayerState {
   final ChannelStream? currentStream;
-  final String? channelName;
+  final Channel? channel;
 
-  const PlayerState({this.currentStream, this.channelName});
+  const PlayerState({this.currentStream, this.channel});
 }

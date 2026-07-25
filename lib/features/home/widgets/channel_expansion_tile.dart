@@ -11,8 +11,14 @@ import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
   final Widget? trailing;
+  final VoidCallback? onPlayStream;
 
-  const ChannelExpansionTile({super.key, required this.channel, this.trailing});
+  const ChannelExpansionTile({
+    super.key,
+    required this.channel,
+    this.trailing,
+    this.onPlayStream,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +31,7 @@ class ChannelExpansionTile extends ConsumerWidget {
         child: Container(
           color: theme.colorScheme.surfaceContainer,
           child: ExpansionTile(
-            leading: ChannelLogoImage(channel: channel),
+            leading: ChannelLogoImage(imageUrl: channel.logoUrl),
             title: Text(
               channel.name,
               maxLines: 1,
@@ -44,7 +50,9 @@ class ChannelExpansionTile extends ConsumerWidget {
                 : null,
             trailing: trailing,
             shape: Border.all(color: Colors.transparent),
-            children: [_ChannelDetails(channel: channel)],
+            children: [
+              _ChannelDetails(channel: channel, onPlayStream: onPlayStream),
+            ],
           ),
         ),
       ),
@@ -54,7 +62,9 @@ class ChannelExpansionTile extends ConsumerWidget {
 
 class _ChannelDetails extends ConsumerWidget {
   final Channel channel;
-  const _ChannelDetails({required this.channel});
+  final VoidCallback? onPlayStream;
+
+  const _ChannelDetails({required this.channel, this.onPlayStream});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,7 +73,6 @@ class _ChannelDetails extends ConsumerWidget {
     return feedsAsync.when(
       data: (feeds) {
         if (feeds.length > 1) {
-          // Kasus A: feed > 1 -> tampil daftar feed
           return Column(
             children: feeds
                 .map(
@@ -73,8 +82,7 @@ class _ChannelDetails extends ConsumerWidget {
                       ref
                           .read(homeContentProvider.notifier)
                           .setStreamsMode(
-                            channelId: channel.id,
-                            channelName: channel.name,
+                            channel: channel,
                             feedId: feed.id,
                             feedName: feed.name.isNotEmpty
                                 ? feed.name
@@ -86,7 +94,6 @@ class _ChannelDetails extends ConsumerWidget {
                 .toList(),
           );
         } else {
-          // Kasus B: feed <= 1 -> langsung tampil streams
           final streamsAsync = ref.watch(channelStreamsProvider(channel.id));
           return streamsAsync.when(
             data: (streams) {
@@ -101,7 +108,8 @@ class _ChannelDetails extends ConsumerWidget {
                     .map(
                       (stream) => _InlineStreamTile(
                         stream: stream,
-                        channelName: channel.name,
+                        channel: channel,
+                        onPlayStream: onPlayStream,
                       ),
                     )
                     .toList(),
@@ -130,9 +138,14 @@ class _ChannelDetails extends ConsumerWidget {
 
 class _InlineStreamTile extends ConsumerWidget {
   final ChannelStream stream;
-  final String channelName;
+  final Channel channel;
+  final VoidCallback? onPlayStream;
 
-  const _InlineStreamTile({required this.stream, required this.channelName});
+  const _InlineStreamTile({
+    required this.stream,
+    required this.channel,
+    this.onPlayStream,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -156,7 +169,8 @@ class _InlineStreamTile extends ConsumerWidget {
           : null,
       selected: isPlaying,
       onTap: () {
-        ref.read(playerStateProvider.notifier).playStream(stream, channelName);
+        ref.read(playerStateProvider.notifier).playStream(stream, channel);
+        onPlayStream?.call();
       },
     );
   }

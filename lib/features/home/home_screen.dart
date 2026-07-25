@@ -1,14 +1,21 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:sycorax_cressida/features/home/providers/channel_filter_provider.dart';
-import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/widgets.dart';
+import 'package:sycorax_cressida/shared/widgets/channel_logo.dart';
+
+class _IsPlayerMinimized extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void set(bool value) => state = value;
+}
+
+final isPlayerMinimizedProvider = NotifierProvider<_IsPlayerMinimized, bool>(
+  _IsPlayerMinimized.new,
+);
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,8 +27,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final Player _player;
   late final VideoController _controller;
-  final _searchController = TextEditingController();
-  Timer? _debounce;
   ProviderSubscription? _playerSubscription;
 
   @override
@@ -47,8 +52,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void dispose() {
     _playerSubscription?.close();
     _player.dispose();
-    _debounce?.cancel();
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -56,63 +59,117 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerStateProvider);
     final homeState = ref.watch(homeContentProvider);
+    final isMinimized = ref.watch(isPlayerMinimizedProvider);
 
     return Column(
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: playerState.currentStream == null
-              ? const PlayerPlaceholder()
-              : Video(controller: _controller, controls: MaterialVideoControls),
-        ),
+        if (playerState.currentStream == null)
+          const AspectRatio(aspectRatio: 16 / 9, child: PlayerPlaceholder())
+        else if (isMinimized)
+          _buildMiniPlayer(playerState)
+        else ...[
+          _buildFullPlayer(),
+          _buildPlayerControls(),
+        ],
+        const CategoryFilter(),
         Expanded(
           child: homeState.mode == HomeContentMode.browse
-              ? _buildBrowseMode()
+              ? const ChannelList()
               : const StreamListView(),
         ),
       ],
     );
   }
 
-  Widget _buildBrowseMode() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search channels...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        ref.read(searchQueryProvider.notifier).update('');
-                        ref.read(channelListProvider.notifier).refresh();
-                        setState(() {});
-                      },
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+  Widget _buildMiniPlayer(PlayerState playerState) {
+    final theme = Theme.of(context);
+    final channel = playerState.channel;
+    final stream = playerState.currentStream;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: ListTile(
+          tileColor: theme.colorScheme.surfaceContainer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          leading: ChannelLogoImage(imageUrl: channel?.logoUrl),
+          title: Text(
+            channel?.name ?? 'Playing',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            [
+              stream?.title,
+              stream?.quality,
+            ].where((e) => e != null).join(' · '),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () => ref.read(isPlayerMinimizedProvider.notifier).set(false),
+          trailing: Badge(
+            backgroundColor: theme.colorScheme.tertiaryContainer,
+            label: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Row(
+                spacing: 4,
+                children: [
+                  Icon(
+                    Icons.radio_button_checked,
+                    color: theme.colorScheme.onTertiaryContainer,
+                    size: 14,
+                  ),
+                  Text(
+                    'Now Playing',
+                    style: TextStyle(
+                      color: theme.colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                ],
               ),
-              filled: true,
             ),
-            onChanged: (value) {
-              _debounce?.cancel();
-              _debounce = Timer(const Duration(milliseconds: 300), () {
-                ref.read(searchQueryProvider.notifier).update(value);
-                ref.read(channelListProvider.notifier).refresh();
-              });
-              setState(() {});
-            },
           ),
         ),
-        const CategoryFilter(),
-        const Expanded(child: ChannelList()),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildFullPlayer() {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Video(controller: _controller, controls: MaterialVideoControls),
+    );
+  }
+
+  Widget _buildPlayerControls() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        spacing: 16,
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.remove),
+              label: const Text('Minimize Player'),
+              onPressed: () =>
+                  ref.read(isPlayerMinimizedProvider.notifier).set(true),
+            ),
+          ),
+          Expanded(
+            child: FilledButton.tonalIcon(
+              icon: const Icon(Icons.stop),
+              label: const Text('Stop'),
+              onPressed: () {
+                ref.read(playerStateProvider.notifier).stop();
+                ref.read(isPlayerMinimizedProvider.notifier).set(false);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
