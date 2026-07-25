@@ -12,7 +12,7 @@ class ChannelLogoImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: CachedNetworkImage(

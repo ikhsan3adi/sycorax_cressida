@@ -2,20 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:sycorax_cressida/data/models/models.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/lookup_providers.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/widgets.dart';
-import 'package:sycorax_cressida/shared/widgets/channel_logo.dart';
-
-class _IsPlayerMinimized extends Notifier<bool> {
-  @override
-  bool build() => false;
-  void set(bool value) => state = value;
-}
-
-final isPlayerMinimizedProvider = NotifierProvider<_IsPlayerMinimized, bool>(
-  _IsPlayerMinimized.new,
-);
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -64,12 +56,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       children: [
         if (playerState.currentStream == null)
-          const AspectRatio(aspectRatio: 16 / 9, child: PlayerPlaceholder())
+          const SizedBox(height: 200, child: PlayerPlaceholder())
         else if (isMinimized)
-          _buildMiniPlayer(playerState)
+          NowPlayingTile(
+            playerState: playerState,
+            onTap: () =>
+                ref.read(isPlayerMinimizedProvider.notifier).set(false),
+          )
         else ...[
           _buildFullPlayer(),
-          _buildPlayerControls(),
+          _PlayerControls(
+            channel: playerState.channel!,
+            chStream: playerState.currentStream!,
+          ),
         ],
         const CategoryFilter(),
         Expanded(
@@ -81,79 +80,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildMiniPlayer(PlayerState playerState) {
-    final theme = Theme.of(context);
-    final channel = playerState.channel;
-    final stream = playerState.currentStream;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: ListTile(
-          tileColor: theme.colorScheme.surfaceContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          leading: ChannelLogoImage(imageUrl: channel?.logoUrl),
-          title: Text(
-            channel?.name ?? 'Playing',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            [
-              stream?.title,
-              stream?.quality,
-            ].where((e) => e != null).join(' · '),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: () => ref.read(isPlayerMinimizedProvider.notifier).set(false),
-          trailing: Badge(
-            backgroundColor: theme.colorScheme.tertiaryContainer,
-            label: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Row(
-                spacing: 4,
-                children: [
-                  Icon(
-                    Icons.radio_button_checked,
-                    color: theme.colorScheme.onTertiaryContainer,
-                    size: 14,
-                  ),
-                  Text(
-                    'Now Playing',
-                    style: TextStyle(
-                      color: theme.colorScheme.onTertiaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildFullPlayer() {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Video(controller: _controller, controls: MaterialVideoControls),
     );
   }
+}
 
-  Widget _buildPlayerControls() {
+class _PlayerControls extends ConsumerWidget {
+  const _PlayerControls({required this.channel, required this.chStream});
+
+  final Channel channel;
+  final ChannelStream chStream;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        spacing: 16,
+        spacing: 8,
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              icon: const Icon(Icons.remove),
-              label: const Text('Minimize Player'),
+              icon: const Icon(Icons.close_fullscreen),
+              label: const Text('Minimize'),
               onPressed: () =>
                   ref.read(isPlayerMinimizedProvider.notifier).set(true),
             ),
@@ -167,6 +118,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ref.read(isPlayerMinimizedProvider.notifier).set(false);
               },
             ),
+          ),
+          IconButton.outlined(
+            icon: const Icon(Icons.info),
+            onPressed: () {
+              ChannelFeed? feed;
+              final feedsAsync = ref.read(channelFeedsProvider(channel.id));
+              if (feedsAsync is AsyncData<List<ChannelFeed>>) {
+                feed = feedsAsync.value.cast<ChannelFeed?>().firstWhere(
+                  (f) => f!.id == chStream.feedId,
+                  orElse: () => null,
+                );
+              }
+
+              final countryNames = ref.read(countryNamesProvider);
+              final languageNames = ref.read(languageNamesProvider);
+              final resolvedCountry = channel.country != null
+                  ? countryNames[channel.country]
+                  : null;
+              final resolvedLanguages = channel.languages.isNotEmpty
+                  ? channel.languages.map((l) => languageNames[l] ?? l).toList()
+                  : null;
+
+              showDialog(
+                context: context,
+                builder: (context) => StreamDetailDialog(
+                  channel: channel,
+                  stream: chStream,
+                  feed: feed,
+                  country: resolvedCountry,
+                  languages: resolvedLanguages,
+                ),
+              );
+            },
           ),
         ],
       ),

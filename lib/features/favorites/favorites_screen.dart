@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/data/providers.dart';
-import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 

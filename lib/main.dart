@@ -10,14 +10,14 @@ import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/app.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    MediaKit.ensureInitialized();
 
-  final db = await AppDatabase.create();
-  final prefs = await SharedPreferences.getInstance();
+    final db = await AppDatabase.create();
+    final prefs = await SharedPreferences.getInstance();
 
-  runZonedGuarded(
-    () => runApp(
+    runApp(
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(db),
@@ -25,7 +25,6 @@ void main() async {
         ],
         child: const SycoraxCressidaApp(),
       ),
-    ),
-    (error, stackTrace) => log('$error\n$stackTrace\n'),
-  );
+    );
+  }, (error, stackTrace) => log('$error\n$stackTrace\n'));
 }

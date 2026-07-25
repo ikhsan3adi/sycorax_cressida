@@ -5,7 +5,6 @@ import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
-import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class ChannelList extends ConsumerStatefulWidget {

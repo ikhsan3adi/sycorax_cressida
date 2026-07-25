@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sycorax_cressida/data/models/channel.dart';
-import 'package:sycorax_cressida/data/models/channel_stream.dart';
+import 'package:sycorax_cressida/data/models/models.dart';
 
 final playerStateProvider = NotifierProvider<PlayerStateNotifier, PlayerState>(
   PlayerStateNotifier.new,
