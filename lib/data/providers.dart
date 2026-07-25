@@ -2,11 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sycorax_cressida/data/api/iptv_client.dart';
 import 'package:sycorax_cressida/data/database/database.dart';
-import 'package:sycorax_cressida/data/database/daos/channel_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/feed_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/stream_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/lookup_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/favorite_dao.dart';
+import 'package:sycorax_cressida/data/database/daos/daos.dart';
 import 'package:sycorax_cressida/data/repositories/channel_repository.dart';
 import 'package:sycorax_cressida/data/repositories/favorites_repository.dart';
 

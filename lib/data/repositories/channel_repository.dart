@@ -1,16 +1,8 @@
 import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/api/iptv_client.dart';
 import 'package:sycorax_cressida/core/constants.dart';
-import 'package:sycorax_cressida/data/database/daos/channel_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/feed_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/stream_dao.dart';
-import 'package:sycorax_cressida/data/database/daos/lookup_dao.dart';
-import 'package:sycorax_cressida/data/models/channel.dart';
-import 'package:sycorax_cressida/data/models/channel_feed.dart';
-import 'package:sycorax_cressida/data/models/channel_stream.dart';
-import 'package:sycorax_cressida/data/models/category.dart';
-import 'package:sycorax_cressida/data/models/country.dart';
-import 'package:sycorax_cressida/data/models/language.dart';
+import 'package:sycorax_cressida/data/database/daos/daos.dart';
+import 'package:sycorax_cressida/data/models/models.dart';
 
 class ChannelRepository {
   final IptvClient _client;

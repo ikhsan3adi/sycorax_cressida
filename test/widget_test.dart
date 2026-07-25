@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:drift/native.dart';
 import 'package:sycorax_cressida/app.dart';
-import 'package:sycorax_cressida/data/database/database.dart'
-    hide Channel, Country, Language, Category;
+import 'package:sycorax_cressida/data/database/database.dart' as db;
 import 'package:sycorax_cressida/data/api/iptv_client.dart';
 import 'package:sycorax_cressida/data/models/channel.dart';
 import 'package:sycorax_cressida/data/models/channel_feed.dart';
@@ -38,19 +37,19 @@ void main() {
   MediaKit.ensureInitialized();
   testWidgets('App renders home screen', (WidgetTester tester) async {
     addTearDown(() {
-      tester.binding.window.clearPhysicalSizeTestValue();
-      tester.binding.window.clearDevicePixelRatioTestValue();
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
     });
-    tester.binding.window.physicalSizeTestValue = const Size(1080, 2340);
-    tester.binding.window.devicePixelRatioTestValue = 2.0;
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 2.0;
 
-    final db = AppDatabase(NativeDatabase.memory());
-    addTearDown(db.close);
+    final database = db.AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          appDatabaseProvider.overrideWithValue(db),
+          appDatabaseProvider.overrideWithValue(database),
           iptvClientProvider.overrideWithValue(FakeIptvClient()),
         ],
         child: const SycoraxCressidaApp(),
