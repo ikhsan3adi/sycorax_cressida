@@ -21,17 +21,20 @@ class FavoritesScreen extends ConsumerWidget {
           itemCount: channels.length,
           itemBuilder: (context, index) {
             final channel = channels[index];
-            return ChannelExpansionTile(
-              channel: channel,
-              onPlayStream: () => context.go('/'),
-              trailing: FavoriteButton(
-                isFavorite: true,
-                onPressed: () async {
-                  await ref
-                      .read(favoritesRepositoryProvider)
-                      .toggleFavorite(channel.id);
-                  ref.invalidate(favoritesListProvider);
-                },
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+              child: ChannelExpansionTile(
+                channel: channel,
+                onPlayStream: () => context.go('/'),
+                trailing: FavoriteButton(
+                  isFavorite: true,
+                  onPressed: () async {
+                    await ref
+                        .read(favoritesRepositoryProvider)
+                        .toggleFavorite(channel.id);
+                    ref.invalidate(favoritesListProvider);
+                  },
+                ),
               ),
             );
           },

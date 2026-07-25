@@ -16,6 +16,7 @@ class Channel {
   final String? replacedBy;
   final String? website;
   final String? logoUrl;
+  final bool hasStreams;
 
   const Channel({
     required this.id,
@@ -35,6 +36,7 @@ class Channel {
     this.replacedBy,
     this.website,
     this.logoUrl,
+    this.hasStreams = true,
   });
 
   factory Channel.fromJson(Map<String, dynamic> json) {

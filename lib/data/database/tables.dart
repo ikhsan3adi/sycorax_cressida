@@ -19,6 +19,7 @@ class Channels extends Table {
   TextColumn get website => text().nullable()();
   TextColumn get logoUrl => text().nullable()();
   IntColumn get syncedAt => integer()();
+  BoolColumn get hasStreams => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};

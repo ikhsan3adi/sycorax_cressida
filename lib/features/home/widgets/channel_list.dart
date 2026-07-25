@@ -5,6 +5,7 @@ import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
+import 'package:sycorax_cressida/features/settings/providers/settings_provider.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class ChannelList extends ConsumerStatefulWidget {
@@ -23,7 +24,33 @@ class _ChannelListState extends ConsumerState<ChannelList> {
     Future(() {
       if (mounted) ref.read(channelListProvider.notifier).init();
     });
+    _setupListeners();
   }
+
+  @override
+  void dispose() {
+    _hideEmptyStreamsListener?.close();
+    _hideNsfwListener?.close();
+    super.dispose();
+  }
+
+  void _setupListeners() {
+    _hideEmptyStreamsListener = ref.listenManual<bool>(
+      hideEmptyStreamsProvider.select((v) => v.value ?? true),
+      (_, next) {
+        ref.read(channelListProvider.notifier).refresh();
+      },
+    );
+    _hideNsfwListener = ref.listenManual<bool>(
+      hideNsfwProvider.select((v) => v.value ?? false),
+      (_, next) {
+        ref.read(channelListProvider.notifier).refresh();
+      },
+    );
+  }
+
+  ProviderSubscription? _hideEmptyStreamsListener;
+  ProviderSubscription? _hideNsfwListener;
 
   @override
   Widget build(BuildContext context) {
@@ -65,21 +92,24 @@ class _ChannelListState extends ConsumerState<ChannelList> {
         final channel = state.channels[index];
         final isFav = ref.watch(isFavoriteProvider(channel.id));
 
-        return ChannelExpansionTile(
-          channel: channel,
-          trailing: isFav.when(
-            data: (fav) => FavoriteButton(
-              isFavorite: fav,
-              onPressed: () async {
-                await ref
-                    .read(favoritesRepositoryProvider)
-                    .toggleFavorite(channel.id);
-                ref.invalidate(isFavoriteProvider(channel.id));
-                ref.invalidate(favoritesListProvider);
-              },
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: ChannelExpansionTile(
+            channel: channel,
+            trailing: isFav.when(
+              data: (fav) => FavoriteButton(
+                isFavorite: fav,
+                onPressed: () async {
+                  await ref
+                      .read(favoritesRepositoryProvider)
+                      .toggleFavorite(channel.id);
+                  ref.invalidate(isFavoriteProvider(channel.id));
+                  ref.invalidate(favoritesListProvider);
+                },
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
             ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
           ),
         );
       },

@@ -1,4 +1,4 @@
-export 'category_filter.dart';
+export 'browse_filters.dart';
 export 'channel_list.dart';
 export 'feed_list_tile.dart';
 export 'player_placeholder.dart';

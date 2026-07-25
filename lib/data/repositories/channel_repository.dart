@@ -24,6 +24,9 @@ class ChannelRepository {
     String? country,
     String? category,
     String? search,
+    bool hideEmptyStreams = false,
+    bool hideNsfw = false,
+    String? language,
     int limit = Constants.pageLimit,
     int offset = 0,
   }) async {
@@ -32,6 +35,9 @@ class ChannelRepository {
       country: country,
       category: category,
       search: search,
+      hideEmptyStreams: hideEmptyStreams,
+      hideNsfw: hideNsfw,
+      language: language,
       limit: limit,
       offset: offset,
     );
@@ -122,7 +128,11 @@ class ChannelRepository {
     final languages = await languagesF;
     final categories = await categoriesF;
 
-    await _channelDao.upsertChannels(channels, syncedAt: now);
+    await _channelDao.upsertChannels(
+      channels,
+      syncedAt: now,
+      channelIdsWithStreams: {for (final s in streams) s.channelId},
+    );
 
     final logoTuples = logos
         .map((l) => (channel: l.channel, inUse: l.inUse, url: l.url))

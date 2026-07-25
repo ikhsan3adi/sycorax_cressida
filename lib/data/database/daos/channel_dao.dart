@@ -12,6 +12,9 @@ class ChannelDao {
     String? country,
     String? category,
     String? search,
+    bool hideEmptyStreams = false,
+    bool hideNsfw = false,
+    String? language,
     int limit = Constants.pageLimit,
     int offset = 0,
   }) async {
@@ -19,12 +22,29 @@ class ChannelDao {
         await (_db.select(_db.channels)
               ..where((t) {
                 Expression<bool>? filter;
-                if (country != null) filter = t.country.equals(country);
+                if (hideEmptyStreams) {
+                  filter = t.hasStreams.equals(true);
+                }
+                if (country != null) {
+                  final match = t.country.equals(country);
+                  filter = (filter != null) ? filter & match : match;
+                }
                 if (category != null) {
                   final escaped = category
                       .replaceAll('%', r'\%')
                       .replaceAll('_', r'\_');
                   final match = t.categories.like('%"$escaped"%');
+                  filter = (filter != null) ? filter & match : match;
+                }
+                if (hideNsfw) {
+                  final match = t.isNsfw.equals(false);
+                  filter = (filter != null) ? filter & match : match;
+                }
+                if (language != null) {
+                  final escaped = language
+                      .replaceAll('%', r'\%')
+                      .replaceAll('_', r'\_');
+                  final match = t.languages.like('%$escaped%');
                   filter = (filter != null) ? filter & match : match;
                 }
                 if (search != null && search.isNotEmpty) {
@@ -61,6 +81,7 @@ class ChannelDao {
   Future<void> upsertChannels(
     List<domain.Channel> channels, {
     int? syncedAt,
+    Set<String>? channelIdsWithStreams,
   }) async {
     final now = syncedAt ?? Utils.nowSeconds();
     await _db.batch((batch) {
@@ -85,6 +106,7 @@ class ChannelDao {
             replacedBy: Value(ch.replacedBy),
             website: Value(ch.website),
             syncedAt: now,
+            hasStreams: Value(channelIdsWithStreams?.contains(ch.id) ?? true),
           ),
           mode: InsertMode.insertOrReplace,
         );
@@ -157,5 +179,6 @@ class ChannelDao {
     replacedBy: r.replacedBy,
     website: r.website,
     logoUrl: r.logoUrl,
+    hasStreams: r.hasStreams,
   );
 }

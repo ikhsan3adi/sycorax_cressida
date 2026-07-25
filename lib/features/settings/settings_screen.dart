@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/features/settings/providers/settings_provider.dart';
 import 'package:sycorax_cressida/features/settings/providers/theme_mode_provider.dart';
 import 'package:sycorax_cressida/features/settings/widgets/widgets.dart';
 
@@ -11,6 +12,9 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final themeModeAsync = ref.watch(themeModeProvider);
+
+    final hideEmptyStreamsAsync = ref.watch(hideEmptyStreamsProvider);
+    final hideNsfwAsync = ref.watch(hideNsfwProvider);
 
     final children = [
       Column(
@@ -35,8 +39,23 @@ class SettingsScreen extends ConsumerWidget {
         subtitle: const Text(
           'Channels with empty streams will be hidden from the main view.',
         ),
-        value: true,
-        onChanged: (bool value) {},
+        value: hideEmptyStreamsAsync.value ?? true,
+        onChanged: (bool value) {
+          ref
+              .read(hideEmptyStreamsProvider.notifier)
+              .setHideEmptyStreams(value);
+        },
+      ),
+      SwitchListTile(
+        secondary: const CircleAvatar(child: Icon(Icons.block)),
+        title: const Text('Hide NSFW Channels'),
+        subtitle: const Text(
+          'NSFW channels will be hidden from the main view.',
+        ),
+        value: hideNsfwAsync.value ?? false,
+        onChanged: (bool value) {
+          ref.read(hideNsfwProvider.notifier).setHideNsfw(value);
+        },
       ),
       ListTile(
         leading: const CircleAvatar(child: Icon(Icons.info)),

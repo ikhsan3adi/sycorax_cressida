@@ -12,12 +12,16 @@ class LookupDao {
   }
 
   Future<List<domain.Language>> getLanguages() async {
-    final rows = await _db.select(_db.languages).get();
+    final rows = await (_db.select(
+      _db.languages,
+    )..orderBy([(t) => OrderingTerm(expression: t.name)])).get();
     return rows.map(_mapLanguage).toList();
   }
 
   Future<List<domain.Category>> getCategories() async {
-    final rows = await _db.select(_db.categories).get();
+    final rows = await (_db.select(
+      _db.categories,
+    )..orderBy([(t) => OrderingTerm(expression: t.name)])).get();
     return rows.map(_mapCategory).toList();
   }
 

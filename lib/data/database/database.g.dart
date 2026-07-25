@@ -197,6 +197,21 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _hasStreamsMeta = const VerificationMeta(
+    'hasStreams',
+  );
+  @override
+  late final GeneratedColumn<bool> hasStreams = GeneratedColumn<bool>(
+    'has_streams',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_streams" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -217,6 +232,7 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     website,
     logoUrl,
     syncedAt,
+    hasStreams,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -359,6 +375,12 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     } else if (isInserting) {
       context.missing(_syncedAtMeta);
     }
+    if (data.containsKey('has_streams')) {
+      context.handle(
+        _hasStreamsMeta,
+        hasStreams.isAcceptableOrUnknown(data['has_streams']!, _hasStreamsMeta),
+      );
+    }
     return context;
   }
 
@@ -440,6 +462,10 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         DriftSqlType.int,
         data['${effectivePrefix}synced_at'],
       )!,
+      hasStreams: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_streams'],
+      )!,
     );
   }
 
@@ -468,6 +494,7 @@ class Channel extends DataClass implements Insertable<Channel> {
   final String? website;
   final String? logoUrl;
   final int syncedAt;
+  final bool hasStreams;
   const Channel({
     required this.id,
     required this.name,
@@ -487,6 +514,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     this.website,
     this.logoUrl,
     required this.syncedAt,
+    required this.hasStreams,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -527,6 +555,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       map['logo_url'] = Variable<String>(logoUrl);
     }
     map['synced_at'] = Variable<int>(syncedAt);
+    map['has_streams'] = Variable<bool>(hasStreams);
     return map;
   }
 
@@ -566,6 +595,7 @@ class Channel extends DataClass implements Insertable<Channel> {
           ? const Value.absent()
           : Value(logoUrl),
       syncedAt: Value(syncedAt),
+      hasStreams: Value(hasStreams),
     );
   }
 
@@ -593,6 +623,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       website: serializer.fromJson<String?>(json['website']),
       logoUrl: serializer.fromJson<String?>(json['logoUrl']),
       syncedAt: serializer.fromJson<int>(json['syncedAt']),
+      hasStreams: serializer.fromJson<bool>(json['hasStreams']),
     );
   }
   @override
@@ -617,6 +648,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       'website': serializer.toJson<String?>(website),
       'logoUrl': serializer.toJson<String?>(logoUrl),
       'syncedAt': serializer.toJson<int>(syncedAt),
+      'hasStreams': serializer.toJson<bool>(hasStreams),
     };
   }
 
@@ -639,6 +671,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     Value<String?> website = const Value.absent(),
     Value<String?> logoUrl = const Value.absent(),
     int? syncedAt,
+    bool? hasStreams,
   }) => Channel(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -658,6 +691,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     website: website.present ? website.value : this.website,
     logoUrl: logoUrl.present ? logoUrl.value : this.logoUrl,
     syncedAt: syncedAt ?? this.syncedAt,
+    hasStreams: hasStreams ?? this.hasStreams,
   );
   Channel copyWithCompanion(ChannelsCompanion data) {
     return Channel(
@@ -687,6 +721,9 @@ class Channel extends DataClass implements Insertable<Channel> {
       website: data.website.present ? data.website.value : this.website,
       logoUrl: data.logoUrl.present ? data.logoUrl.value : this.logoUrl,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
+      hasStreams: data.hasStreams.present
+          ? data.hasStreams.value
+          : this.hasStreams,
     );
   }
 
@@ -710,7 +747,8 @@ class Channel extends DataClass implements Insertable<Channel> {
           ..write('replacedBy: $replacedBy, ')
           ..write('website: $website, ')
           ..write('logoUrl: $logoUrl, ')
-          ..write('syncedAt: $syncedAt')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('hasStreams: $hasStreams')
           ..write(')'))
         .toString();
   }
@@ -735,6 +773,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     website,
     logoUrl,
     syncedAt,
+    hasStreams,
   );
   @override
   bool operator ==(Object other) =>
@@ -757,7 +796,8 @@ class Channel extends DataClass implements Insertable<Channel> {
           other.replacedBy == this.replacedBy &&
           other.website == this.website &&
           other.logoUrl == this.logoUrl &&
-          other.syncedAt == this.syncedAt);
+          other.syncedAt == this.syncedAt &&
+          other.hasStreams == this.hasStreams);
 }
 
 class ChannelsCompanion extends UpdateCompanion<Channel> {
@@ -779,6 +819,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   final Value<String?> website;
   final Value<String?> logoUrl;
   final Value<int> syncedAt;
+  final Value<bool> hasStreams;
   final Value<int> rowid;
   const ChannelsCompanion({
     this.id = const Value.absent(),
@@ -799,6 +840,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     this.website = const Value.absent(),
     this.logoUrl = const Value.absent(),
     this.syncedAt = const Value.absent(),
+    this.hasStreams = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChannelsCompanion.insert({
@@ -820,6 +862,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     this.website = const Value.absent(),
     this.logoUrl = const Value.absent(),
     required int syncedAt,
+    this.hasStreams = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -849,6 +892,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     Expression<String>? website,
     Expression<String>? logoUrl,
     Expression<int>? syncedAt,
+    Expression<bool>? hasStreams,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -870,6 +914,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       if (website != null) 'website': website,
       if (logoUrl != null) 'logo_url': logoUrl,
       if (syncedAt != null) 'synced_at': syncedAt,
+      if (hasStreams != null) 'has_streams': hasStreams,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -893,6 +938,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     Value<String?>? website,
     Value<String?>? logoUrl,
     Value<int>? syncedAt,
+    Value<bool>? hasStreams,
     Value<int>? rowid,
   }) {
     return ChannelsCompanion(
@@ -914,6 +960,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       website: website ?? this.website,
       logoUrl: logoUrl ?? this.logoUrl,
       syncedAt: syncedAt ?? this.syncedAt,
+      hasStreams: hasStreams ?? this.hasStreams,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -975,6 +1022,9 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     if (syncedAt.present) {
       map['synced_at'] = Variable<int>(syncedAt.value);
     }
+    if (hasStreams.present) {
+      map['has_streams'] = Variable<bool>(hasStreams.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1002,6 +1052,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
           ..write('website: $website, ')
           ..write('logoUrl: $logoUrl, ')
           ..write('syncedAt: $syncedAt, ')
+          ..write('hasStreams: $hasStreams, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3203,6 +3254,7 @@ typedef $$ChannelsTableCreateCompanionBuilder =
       Value<String?> website,
       Value<String?> logoUrl,
       required int syncedAt,
+      Value<bool> hasStreams,
       Value<int> rowid,
     });
 typedef $$ChannelsTableUpdateCompanionBuilder =
@@ -3225,6 +3277,7 @@ typedef $$ChannelsTableUpdateCompanionBuilder =
       Value<String?> website,
       Value<String?> logoUrl,
       Value<int> syncedAt,
+      Value<bool> hasStreams,
       Value<int> rowid,
     });
 
@@ -3324,6 +3377,11 @@ class $$ChannelsTableFilterComposer
 
   ColumnFilters<int> get syncedAt => $composableBuilder(
     column: $table.syncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasStreams => $composableBuilder(
+    column: $table.hasStreams,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3426,6 +3484,11 @@ class $$ChannelsTableOrderingComposer
     column: $table.syncedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get hasStreams => $composableBuilder(
+    column: $table.hasStreams,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ChannelsTableAnnotationComposer
@@ -3498,6 +3561,11 @@ class $$ChannelsTableAnnotationComposer
 
   GeneratedColumn<int> get syncedAt =>
       $composableBuilder(column: $table.syncedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasStreams => $composableBuilder(
+    column: $table.hasStreams,
+    builder: (column) => column,
+  );
 }
 
 class $$ChannelsTableTableManager
@@ -3546,6 +3614,7 @@ class $$ChannelsTableTableManager
                 Value<String?> website = const Value.absent(),
                 Value<String?> logoUrl = const Value.absent(),
                 Value<int> syncedAt = const Value.absent(),
+                Value<bool> hasStreams = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion(
                 id: id,
@@ -3566,6 +3635,7 @@ class $$ChannelsTableTableManager
                 website: website,
                 logoUrl: logoUrl,
                 syncedAt: syncedAt,
+                hasStreams: hasStreams,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3588,6 +3658,7 @@ class $$ChannelsTableTableManager
                 Value<String?> website = const Value.absent(),
                 Value<String?> logoUrl = const Value.absent(),
                 required int syncedAt,
+                Value<bool> hasStreams = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion.insert(
                 id: id,
@@ -3608,6 +3679,7 @@ class $$ChannelsTableTableManager
                 website: website,
                 logoUrl: logoUrl,
                 syncedAt: syncedAt,
+                hasStreams: hasStreams,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

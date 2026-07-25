@@ -22,13 +22,14 @@ class ChannelExpansionTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isEmpty = !channel.hasStreams;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          color: theme.colorScheme.surfaceContainer,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: theme.colorScheme.surfaceContainer,
+        child: Opacity(
+          opacity: isEmpty ? 0.4 : 1.0,
           child: ExpansionTile(
             leading: ChannelLogoImage(imageUrl: channel.logoUrl),
             title: Text(

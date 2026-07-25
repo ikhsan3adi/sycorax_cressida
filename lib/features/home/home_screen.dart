@@ -70,7 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             chStream: playerState.currentStream!,
           ),
         ],
-        const CategoryFilter(),
+        const BrowseFilters(),
         Expanded(
           child: homeState.mode == HomeContentMode.browse
               ? const ChannelList()

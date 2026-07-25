@@ -3,6 +3,7 @@ import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_filter_provider.dart';
+import 'package:sycorax_cressida/features/settings/providers/settings_provider.dart';
 
 final channelListProvider =
     NotifierProvider<ChannelListNotifier, ChannelListState>(
@@ -11,7 +12,12 @@ final channelListProvider =
 
 final categoryListProvider = FutureProvider<List<Category>>((ref) async {
   final repo = ref.watch(channelRepositoryProvider);
-  return repo.getCategories();
+  final hideNsfw = ref.watch(hideNsfwProvider).value ?? false;
+  final categories = await repo.getCategories();
+  if (hideNsfw) {
+    return categories.where((c) => c.name != 'XXX').toList();
+  }
+  return categories;
 });
 
 final countryListProvider = FutureProvider<List<Country>>((ref) async {
@@ -66,8 +72,16 @@ class ChannelListNotifier extends Notifier<ChannelListState> {
       final repo = ref.read(channelRepositoryProvider);
       final search = ref.read(searchQueryProvider);
       final category = ref.read(selectedCategoryProvider);
+      final country = ref.read(selectedCountryProvider);
+      final language = ref.read(selectedLanguageProvider);
+      final hideEmptyStreams = ref.read(hideEmptyStreamsProvider).value ?? true;
+      final hideNsfw = ref.read(hideNsfwProvider).value ?? false;
       final newChannels = await repo.getChannels(
         category: category,
+        country: country,
+        language: language,
+        hideEmptyStreams: hideEmptyStreams,
+        hideNsfw: hideNsfw,
         search: search.isNotEmpty ? search : null,
         limit: Constants.pageLimit,
         offset: _page * Constants.pageLimit,

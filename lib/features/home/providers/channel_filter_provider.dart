@@ -12,6 +12,10 @@ final selectedCountryProvider = NotifierProvider<SelectedCountry, String?>(
   SelectedCountry.new,
 );
 
+final selectedLanguageProvider = NotifierProvider<SelectedLanguage, String?>(
+  SelectedLanguage.new,
+);
+
 class SelectedCategory extends Notifier<String?> {
   @override
   String? build() => null;
@@ -19,6 +23,12 @@ class SelectedCategory extends Notifier<String?> {
 }
 
 class SelectedCountry extends Notifier<String?> {
+  @override
+  String? build() => null;
+  void update(String? value) => state = value;
+}
+
+class SelectedLanguage extends Notifier<String?> {
   @override
   String? build() => null;
   void update(String? value) => state = value;
