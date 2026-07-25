@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/shared/widgets/loading.dart';
+import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 import 'package:sycorax_cressida/data/models/channel_stream.dart';
 
 class StreamListView extends ConsumerStatefulWidget {

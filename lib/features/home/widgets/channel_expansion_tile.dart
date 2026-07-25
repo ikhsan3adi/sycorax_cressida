@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sycorax_cressida/data/models/channel.dart';
 import 'package:sycorax_cressida/data/models/channel_stream.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/feed_list_tile.dart';
-import 'package:sycorax_cressida/shared/widgets/loading.dart';
+import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
@@ -17,34 +16,38 @@ class ChannelExpansionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ExpansionTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: channel.logoUrl ?? '',
-          width: 40,
-          height: 40,
-          fit: BoxFit.contain,
-          errorWidget: (_, _, _) => Container(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: const Icon(Icons.tv, size: 20),
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          color: theme.colorScheme.surfaceContainer,
+          child: ExpansionTile(
+            leading: ChannelLogoImage(channel: channel),
+            title: Text(
+              channel.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: channel.categories.isNotEmpty || channel.country != null
+                ? Text(
+                    [
+                      if (channel.categories.isNotEmpty)
+                        channel.categories.join(', '),
+                      if (channel.country != null) channel.country!,
+                    ].join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : null,
+            trailing: trailing,
+            shape: Border.all(color: Colors.transparent),
+            children: [_ChannelDetails(channel: channel)],
           ),
         ),
       ),
-      title: Text(channel.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: channel.categories.isNotEmpty || channel.country != null
-          ? Text(
-              [
-                if (channel.categories.isNotEmpty)
-                  channel.categories.join(', '),
-                if (channel.country != null) channel.country!,
-              ].join(' · '),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            )
-          : null,
-      trailing: trailing,
-      children: [_ChannelDetails(channel: channel)],
     );
   }
 }

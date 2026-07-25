@@ -9,38 +9,75 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final themeModeAsync = ref.watch(themeModeProvider);
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Settings',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        const Divider(),
-        ThemeButton(
-          mode: themeModeAsync.value ?? ThemeMode.system,
-          onSelectionChanged: (Set<ThemeMode> newSelection) {
-            ref
-                .read(themeModeProvider.notifier)
-                .setThemeMode(newSelection.first);
-          },
-        ),
-        const Spacer(),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            '${AppConstants.appName} v${AppConstants.appVersion}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.outline,
+    final children = [
+      Column(
+        children: [
+          ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.palette)),
+            title: const Text('Theme'),
+            subtitle: ThemeButton(
+              mode: themeModeAsync.value ?? ThemeMode.system,
+              onSelectionChanged: (Set<ThemeMode> newSelection) {
+                ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(newSelection.first);
+              },
             ),
-            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      SwitchListTile(
+        secondary: const CircleAvatar(child: Icon(Icons.video_collection)),
+        title: const Text('Hide Channels with Empty Streams'),
+        subtitle: const Text(
+          'Channels with empty streams will be hidden from the main view.',
+        ),
+        value: true,
+        onChanged: (bool value) {},
+      ),
+      ListTile(
+        leading: const CircleAvatar(child: Icon(Icons.info)),
+        title: const Text('About'),
+        subtitle: const Text(
+          '${AppConstants.appName} v${AppConstants.appVersion}',
+        ),
+        onTap: () {},
+      ),
+    ];
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: children.asMap().entries.map((entry) {
+              final index = entry.key;
+              final child = entry.value;
+              return Card.filled(
+                color: theme.colorScheme.surfaceContainer,
+                clipBehavior: Clip.hardEdge,
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: index == 0
+                        ? const Radius.circular(12)
+                        : const Radius.circular(4),
+                    bottom: index == children.length - 1
+                        ? const Radius.circular(12)
+                        : const Radius.circular(4),
+                  ),
+                ),
+                child: child,
+              );
+            }).toList(),
           ),
         ),
-      ],
+      ),
     );
   }
 }

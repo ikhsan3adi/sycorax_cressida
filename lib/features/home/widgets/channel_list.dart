@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:sycorax_cressida/core/constants.dart';
-import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
-import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
-import 'package:sycorax_cressida/shared/widgets/loading.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
+import 'package:sycorax_cressida/features/home/widgets/channel_expansion_tile.dart';
+import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class ChannelList extends ConsumerStatefulWidget {
   const ChannelList({super.key});
@@ -69,37 +69,27 @@ class _ChannelListState extends ConsumerState<ChannelList> {
             );
           }
           final channel = state.channels[index];
+          final isFav = ref.watch(isFavoriteProvider(channel.id));
+
           return ChannelExpansionTile(
             channel: channel,
-            trailing: _FavoriteButton(channelId: channel.id),
+            trailing: isFav.when(
+              data: (fav) => FavoriteButton(
+                isFavorite: fav,
+                onPressed: () async {
+                  await ref
+                      .read(favoritesRepositoryProvider)
+                      .toggleFavorite(channel.id);
+                  ref.invalidate(isFavoriteProvider(channel.id));
+                  ref.invalidate(favoritesListProvider);
+                },
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
+            ),
           );
         },
       ),
-    );
-  }
-}
-
-class _FavoriteButton extends ConsumerWidget {
-  final String channelId;
-  const _FavoriteButton({required this.channelId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref.watch(isFavoriteProvider(channelId));
-    return isFav.when(
-      data: (fav) => IconButton(
-        icon: Icon(
-          fav ? Icons.thumb_up : Icons.thumb_up_outlined,
-          color: fav ? Colors.red : null,
-        ),
-        onPressed: () async {
-          await ref.read(favoritesRepositoryProvider).toggleFavorite(channelId);
-          ref.invalidate(isFavoriteProvider(channelId));
-          ref.invalidate(favoritesListProvider);
-        },
-      ),
-      loading: () => const SizedBox.shrink(),
-      error: (Object e, StackTrace s) => const SizedBox.shrink(),
     );
   }
 }

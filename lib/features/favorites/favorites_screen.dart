@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/shared/widgets/channel_tile.dart';
-import 'package:sycorax_cressida/shared/widgets/loading.dart';
+import 'package:sycorax_cressida/features/favorites/widgets/channel_tile.dart';
+import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 
 class FavoritesScreen extends ConsumerWidget {
@@ -25,8 +25,8 @@ class FavoritesScreen extends ConsumerWidget {
             final channel = channels[index];
             return ChannelTile(
               channel: channel,
-              trailing: IconButton(
-                icon: const Icon(Icons.thumb_up, color: Colors.red),
+              trailing: FavoriteButton(
+                isFavorite: true,
                 onPressed: () async {
                   await ref
                       .read(favoritesRepositoryProvider)

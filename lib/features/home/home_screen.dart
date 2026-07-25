@@ -8,10 +8,7 @@ import 'package:sycorax_cressida/features/home/providers/channel_filter_provider
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/features/home/widgets/category_filter.dart';
-import 'package:sycorax_cressida/features/home/widgets/channel_list.dart';
-import 'package:sycorax_cressida/features/home/widgets/player_placeholder.dart';
-import 'package:sycorax_cressida/features/home/widgets/stream_list_view.dart';
+import 'package:sycorax_cressida/features/home/widgets/widgets.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

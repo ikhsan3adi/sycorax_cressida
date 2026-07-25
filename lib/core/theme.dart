@@ -346,6 +346,7 @@ class MaterialTheme {
     ),
     scaffoldBackgroundColor: colorScheme.surface,
     canvasColor: colorScheme.surface,
+    visualDensity: VisualDensity.standard,
   );
 
   List<ExtendedColor> get extendedColors => [];

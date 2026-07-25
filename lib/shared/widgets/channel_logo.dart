@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sycorax_cressida/data/models/channel.dart';
+
+class ChannelLogoImage extends StatelessWidget {
+  const ChannelLogoImage({super.key, required this.channel});
+
+  final Channel channel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CachedNetworkImage(
+            imageUrl: channel.logoUrl ?? '',
+            width: 54,
+            height: 54,
+            fit: BoxFit.contain,
+            errorWidget: (_, _, _) =>
+                Icon(Icons.tv, color: theme.colorScheme.onSurface),
+          ),
+        ),
+      ),
+    );
+  }
+}
