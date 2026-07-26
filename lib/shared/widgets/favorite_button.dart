@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
-import 'package:sycorax_cressida/shared/widgets/m3e_shape_clipper.dart';
+import 'package:sycorax_cressida/shared/paintings/m3e_shape_clipper.dart';
 
 class FavoriteButton extends StatelessWidget {
   const FavoriteButton({super.key, required this.isFavorite, this.onPressed});

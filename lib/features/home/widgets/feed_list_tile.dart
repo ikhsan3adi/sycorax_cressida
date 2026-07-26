@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/channel_feed.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/shared/widgets/widgets.dart';
+import 'package:sycorax_cressida/shared/paintings/m3e_shape_clipper.dart';
 
 class FeedListTile extends ConsumerWidget {
   final ChannelFeed feed;

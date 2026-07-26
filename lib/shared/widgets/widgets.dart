@@ -3,5 +3,5 @@ export 'channel_logo.dart';
 export 'favorite_button.dart';
 export 'loading.dart';
 export 'shell_scaffold.dart';
-export 'm3e_shape_clipper.dart';
 export 'morphing_decoration.dart';
+export 'stream_tile.dart';

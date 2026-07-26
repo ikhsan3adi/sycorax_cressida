@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
+import 'package:sycorax_cressida/shared/paintings/custom_path_shape_border.dart';
 
 class MorphingDecoration extends StatefulWidget {
   final Widget? child;
@@ -37,7 +38,7 @@ class _MorphingDecorationState extends State<MorphingDecoration> {
   int _currentBgColorIndex = 0;
 
   final List<ShapeBorder> _shapes = MaterialShapes.all
-      .map((shape) => CustomPathShape(rawPath: shape.toPath()))
+      .map((shape) => CustomPathShapeBorder(rawPath: shape.toPath()))
       .toList();
 
   @override
@@ -148,43 +149,4 @@ class _MorphingDecorationState extends State<MorphingDecoration> {
       ),
     );
   }
-}
-
-class CustomPathShape extends ShapeBorder {
-  Path pathBuilder(Rect rect) {
-    final Rect bounds = rawPath.getBounds();
-
-    final double scaleX = rect.width / bounds.width;
-    final double scaleY = rect.height / bounds.height;
-
-    final Matrix4 matrix = Matrix4.identity()
-      ..translateByDouble(rect.center.dx, rect.center.dy, 0.0, 1.0)
-      ..scaleByDouble(scaleX, scaleY, 1.0, 1.0)
-      ..translateByDouble(-bounds.center.dx, -bounds.center.dy, 0.0, 1.0);
-
-    return rawPath.transform(matrix.storage);
-  }
-
-  final Path rawPath;
-
-  const CustomPathShape({required this.rawPath});
-
-  @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return pathBuilder(rect);
-  }
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    return pathBuilder(rect);
-  }
-
-  @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
-
-  @override
-  ShapeBorder scale(double t) => this;
 }

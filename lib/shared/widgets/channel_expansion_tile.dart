@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
@@ -8,7 +7,7 @@ import 'package:sycorax_cressida/features/home/providers/player_state_provider.d
 import 'package:sycorax_cressida/features/home/widgets/feed_list_tile.dart';
 import 'package:sycorax_cressida/shared/widgets/channel_logo.dart';
 import 'package:sycorax_cressida/shared/widgets/loading.dart';
-import 'package:sycorax_cressida/shared/widgets/m3e_shape_clipper.dart';
+import 'package:sycorax_cressida/shared/widgets/stream_tile.dart';
 
 class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
@@ -72,7 +71,7 @@ class ChannelExpansionTile extends ConsumerWidget {
             trailing: trailing,
             shape: Border.all(color: Colors.transparent, width: 0),
             children: [
-              _ChannelDetails(channel: channel, onPlayStream: onChildTap),
+              _ChannelDetails(channel: channel, onChildTap: onChildTap),
             ],
           ),
         ),
@@ -83,9 +82,9 @@ class ChannelExpansionTile extends ConsumerWidget {
 
 class _ChannelDetails extends ConsumerWidget {
   final Channel channel;
-  final Function(HomeContentMode mode)? onPlayStream;
+  final Function(HomeContentMode mode)? onChildTap;
 
-  const _ChannelDetails({required this.channel, this.onPlayStream});
+  const _ChannelDetails({required this.channel, this.onChildTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -109,7 +108,7 @@ class _ChannelDetails extends ConsumerWidget {
                                 ? feed.name
                                 : 'Default Feed',
                           );
-                      onPlayStream?.call(HomeContentMode.streams);
+                      onChildTap?.call(HomeContentMode.streams);
                     },
                   ),
                 )
@@ -128,10 +127,18 @@ class _ChannelDetails extends ConsumerWidget {
               return Column(
                 children: streams
                     .map(
-                      (stream) => _InlineStreamTile(
+                      (stream) => StreamTile(
                         stream: stream,
                         channel: channel,
-                        onPlayStream: onPlayStream,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                        ),
+                        onTap: () {
+                          ref
+                              .read(playerStateProvider.notifier)
+                              .playStream(stream, channel);
+                          onChildTap?.call(HomeContentMode.browse);
+                        },
                       ),
                     )
                     .toList(),
@@ -154,71 +161,6 @@ class _ChannelDetails extends ConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Text('Error loading feeds: $e'),
       ),
-    );
-  }
-}
-
-class _InlineStreamTile extends ConsumerWidget {
-  final ChannelStream stream;
-  final Channel channel;
-  final Function(HomeContentMode mode)? onPlayStream;
-
-  const _InlineStreamTile({
-    required this.stream,
-    required this.channel,
-    this.onPlayStream,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final playerState = ref.watch(playerStateProvider);
-    final isPlaying = playerState.currentStream?.url == stream.url;
-
-    return ListTile(
-      key: Key('${channel.id}-${stream.url}'),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-      selectedTileColor: theme.colorScheme.secondaryContainer,
-      tileColor: theme.colorScheme.surfaceContainer,
-      leading: ClipPath(
-        clipper: M3eShapeClipper(
-          shape: isPlaying ? MaterialShapes.softBoom : MaterialShapes.pill,
-        ),
-        child: CircleAvatar(
-          backgroundColor: isPlaying
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.secondaryContainer,
-          foregroundColor: isPlaying
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onSecondaryContainer,
-          child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
-        ),
-      ),
-      title: Text(
-        stream.title.isNotEmpty ? stream.title : 'Stream',
-        style: TextStyle(
-          fontWeight: isPlaying ? FontWeight.bold : null,
-          color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
-        ),
-      ),
-      subtitle: stream.quality != null || stream.label != null
-          ? Text(
-              [
-                stream.quality,
-                stream.label,
-              ].where((e) => e != null).join(' · '),
-              style: TextStyle(
-                color: isPlaying
-                    ? theme.colorScheme.onSecondaryContainer
-                    : null,
-              ),
-            )
-          : null,
-      selected: isPlaying,
-      onTap: () {
-        ref.read(playerStateProvider.notifier).playStream(stream, channel);
-        onPlayStream?.call(HomeContentMode.browse);
-      },
     );
   }
 }
