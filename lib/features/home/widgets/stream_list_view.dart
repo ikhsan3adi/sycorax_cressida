@@ -150,7 +150,7 @@ class _StreamTile extends ConsumerWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         color: isPlaying
-            ? theme.colorScheme.primaryContainer
+            ? theme.colorScheme.secondaryContainer
             : theme.colorScheme.surfaceContainer,
         child: ListTile(
           key: Key('${channel.id}-${stream.url}'),
