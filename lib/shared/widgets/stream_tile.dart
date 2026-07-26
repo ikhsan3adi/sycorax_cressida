@@ -9,6 +9,7 @@ class StreamTile extends ConsumerWidget {
   final ChannelStream stream;
   final Channel channel;
   final EdgeInsets? contentPadding;
+  final ShapeBorder? shape;
   final Function()? onTap;
 
   const StreamTile({
@@ -16,6 +17,7 @@ class StreamTile extends ConsumerWidget {
     required this.stream,
     required this.channel,
     this.contentPadding,
+    this.shape,
     this.onTap,
   });
 
@@ -28,6 +30,7 @@ class StreamTile extends ConsumerWidget {
     return ListTile(
       key: Key('${channel.id}-${stream.url}'),
       contentPadding: contentPadding,
+      shape: shape,
       selectedTileColor: theme.colorScheme.secondaryContainer,
       tileColor: theme.colorScheme.surfaceContainer,
       leading: ClipPath(

@@ -86,6 +86,9 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                     child: StreamTile(
                       stream: stream,
                       channel: state.channel!,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       onTap: () {
                         ref
                             .read(playerStateProvider.notifier)

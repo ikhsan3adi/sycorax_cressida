@@ -37,9 +37,11 @@ class _MorphingDecorationState extends State<MorphingDecoration> {
   int _currentColorIndex = 0;
   int _currentBgColorIndex = 0;
 
-  final List<ShapeBorder> _shapes = MaterialShapes.all
-      .map((shape) => CustomPathShapeBorder(rawPath: shape.toPath()))
-      .toList();
+  final List<ShapeBorder> _shapes =
+      MaterialShapes.all
+          .map((shape) => CustomPathShapeBorder(rawPath: shape.toPath()))
+          .toList()
+        ..shuffle();
 
   @override
   void initState() {
