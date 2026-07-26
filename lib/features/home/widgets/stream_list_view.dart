@@ -78,7 +78,13 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                 itemCount: streams.length,
                 itemBuilder: (context, index) {
                   final stream = streams[index];
-                  return _StreamTile(stream: stream, channel: state.channel!);
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 2,
+                    ),
+                    child: _StreamTile(stream: stream, channel: state.channel!),
+                  );
                 },
               );
             },
@@ -136,27 +142,54 @@ class _StreamTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final playerState = ref.watch(playerStateProvider);
     final isPlaying = playerState.currentStream?.url == stream.url;
 
-    return ListTile(
-      leading: Icon(
-        isPlaying ? Icons.play_circle_filled : Icons.play_circle_outline,
-        color: isPlaying ? Theme.of(context).colorScheme.primary : null,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: isPlaying
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainer,
+        child: ListTile(
+          key: Key('${channel.id}-${stream.url}'),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          leading: CircleAvatar(
+            backgroundColor: isPlaying
+                ? theme.colorScheme.primaryContainer
+                : theme.colorScheme.surfaceContainerHigh,
+            foregroundColor: isPlaying
+                ? theme.colorScheme.onPrimaryContainer
+                : theme.colorScheme.onSurface,
+            child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
+          ),
+          title: Text(
+            stream.title.isNotEmpty ? stream.title : 'Stream',
+            style: TextStyle(
+              fontWeight: isPlaying ? FontWeight.bold : null,
+              color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
+            ),
+          ),
+          subtitle: stream.quality != null || stream.label != null
+              ? Text(
+                  [
+                    stream.quality,
+                    stream.label,
+                  ].where((e) => e != null).join(' · '),
+                  style: TextStyle(
+                    color: isPlaying
+                        ? theme.colorScheme.onSecondaryContainer
+                        : null,
+                  ),
+                )
+              : null,
+          selected: isPlaying,
+          onTap: () {
+            ref.read(playerStateProvider.notifier).playStream(stream, channel);
+          },
+        ),
       ),
-      title: Text(stream.title.isNotEmpty ? stream.title : 'Stream'),
-      subtitle: stream.quality != null || stream.label != null
-          ? Text(
-              [
-                stream.quality,
-                stream.label,
-              ].where((e) => e != null).join(' · '),
-            )
-          : null,
-      selected: isPlaying,
-      onTap: () {
-        ref.read(playerStateProvider.notifier).playStream(stream, channel);
-      },
     );
   }
 }

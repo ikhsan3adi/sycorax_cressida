@@ -10,10 +10,10 @@ class BrowseFilters extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoryListProvider);
     final countriesAsync = ref.watch(countryListProvider);
-    final languagesAsync = ref.watch(languageListProvider);
+    // final languagesAsync = ref.watch(languageListProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
-    final selectedLanguage = ref.watch(selectedLanguageProvider);
+    // final selectedLanguage = ref.watch(selectedLanguageProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

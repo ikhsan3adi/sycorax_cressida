@@ -23,19 +23,28 @@ class ChannelExpansionTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isEmpty = !channel.hasStreams;
+    final playerState = ref.watch(playerStateProvider);
+    final isPlaying = playerState.currentStream?.channelId == channel.id;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        color: theme.colorScheme.surfaceContainer,
+        color: isPlaying
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainer,
         child: Opacity(
           opacity: isEmpty ? 0.4 : 1.0,
           child: ExpansionTile(
+            key: Key('${channel.id}-${channel.name}'),
             leading: ChannelLogoImage(imageUrl: channel.logoUrl),
             title: Text(
               channel.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: isPlaying ? FontWeight.bold : null,
+                color: isPlaying ? theme.colorScheme.onPrimaryContainer : null,
+              ),
             ),
             subtitle: channel.categories.isNotEmpty || channel.country != null
                 ? Text(
@@ -46,6 +55,11 @@ class ChannelExpansionTile extends ConsumerWidget {
                     ].join(' · '),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isPlaying
+                          ? theme.colorScheme.onPrimaryContainer
+                          : null,
+                    ),
                   )
                 : null,
             trailing: trailing,
@@ -149,22 +163,42 @@ class _InlineStreamTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final playerState = ref.watch(playerStateProvider);
     final isPlaying = playerState.currentStream?.url == stream.url;
 
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 32.0),
-      leading: Icon(
-        isPlaying ? Icons.play_circle_filled : Icons.play_circle_outline,
-        color: isPlaying ? Theme.of(context).colorScheme.primary : null,
+      key: Key('${channel.id}-${stream.url}'),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+      selectedTileColor: theme.colorScheme.secondaryContainer,
+      tileColor: theme.colorScheme.surfaceContainer,
+      leading: CircleAvatar(
+        backgroundColor: isPlaying
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHigh,
+        foregroundColor: isPlaying
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface,
+        child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
       ),
-      title: Text(stream.title.isNotEmpty ? stream.title : 'Stream'),
+      title: Text(
+        stream.title.isNotEmpty ? stream.title : 'Stream',
+        style: TextStyle(
+          fontWeight: isPlaying ? FontWeight.bold : null,
+          color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
+        ),
+      ),
       subtitle: stream.quality != null || stream.label != null
           ? Text(
               [
                 stream.quality,
                 stream.label,
               ].where((e) => e != null).join(' · '),
+              style: TextStyle(
+                color: isPlaying
+                    ? theme.colorScheme.onSecondaryContainer
+                    : null,
+              ),
             )
           : null,
       selected: isPlaying,

@@ -41,7 +41,7 @@ class NowPlayingTile extends StatelessWidget {
           trailing: Badge(
             backgroundColor: theme.colorScheme.tertiaryContainer,
             label: Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               child: Row(
                 spacing: 4,
                 children: [

@@ -1,35 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sycorax_cressida/data/models/channel_feed.dart';
+import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 
-class FeedListTile extends StatelessWidget {
+class FeedListTile extends ConsumerWidget {
   final ChannelFeed feed;
   final VoidCallback onTap;
 
   const FeedListTile({super.key, required this.feed, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final playerState = ref.watch(playerStateProvider);
+    final isPlaying = playerState.currentStream?.feedId == feed.id;
+
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 32.0),
-      leading: const Icon(Icons.playlist_play),
-      title: Text(feed.name.isNotEmpty ? feed.name : 'Default Feed'),
-      subtitle: feed.format != null ? Text(feed.format!) : null,
-      trailing: feed.isMain
-          ? Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                'Main',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+      key: Key('${feed.channelId}-${feed.id}'),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+      selectedTileColor: theme.colorScheme.secondaryContainer,
+      tileColor: theme.colorScheme.surfaceContainer,
+      leading: CircleAvatar(
+        backgroundColor: isPlaying
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHigh,
+        foregroundColor: isPlaying
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface,
+        child: const Icon(Icons.playlist_play),
+      ),
+      title: Text(
+        feed.name.isNotEmpty ? feed.name : 'Default Feed',
+        style: TextStyle(
+          fontWeight: isPlaying ? FontWeight.bold : null,
+          color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
+        ),
+      ),
+      subtitle: feed.format != null
+          ? Text(
+              feed.format!,
+              style: TextStyle(
+                color: isPlaying
+                    ? theme.colorScheme.onSecondaryContainer
+                    : null,
               ),
             )
           : null,
+      selected: isPlaying,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 4,
+        children: [
+          if (feed.isMain)
+            Badge(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              backgroundColor: theme.colorScheme.primaryContainer,
+              label: const Text('Main'),
+            ),
+          if (isPlaying)
+            Badge(
+              backgroundColor: theme.colorScheme.tertiaryContainer,
+              label: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  spacing: 4,
+                  children: [
+                    Icon(
+                      Icons.radio_button_checked,
+                      color: theme.colorScheme.onTertiaryContainer,
+                      size: 14,
+                    ),
+                    Text(
+                      'Now Playing',
+                      style: TextStyle(
+                        color: theme.colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
       onTap: onTap,
     );
   }

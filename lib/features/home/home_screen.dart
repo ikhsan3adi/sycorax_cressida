@@ -64,7 +64,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ref.read(isPlayerMinimizedProvider.notifier).set(false),
           )
         else ...[
-          _buildFullPlayer(),
+          _buildFullPlayer(context),
           _PlayerControls(
             channel: playerState.channel!,
             chStream: playerState.currentStream!,
@@ -80,10 +80,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildFullPlayer() {
+  Widget _buildFullPlayer(BuildContext context) {
     return AspectRatio(
       aspectRatio: 16 / 9,
-      child: Video(controller: _controller, controls: MaterialVideoControls),
+      child: Video(controller: _controller),
     );
   }
 }
