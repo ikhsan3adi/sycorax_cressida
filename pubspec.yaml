@@ -49,6 +49,8 @@ dependencies:
   path: ^1.9.0
   shared_preferences: ^2.5.5
   flutter_staggered_grid_view: ^0.7.0
+  material3_expressive_loading_indicator: ^0.1.2
+  material_new_shapes: ^1.0.0
 
 dev_dependencies:
   flutter_test:

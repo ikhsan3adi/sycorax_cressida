@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
@@ -167,14 +168,19 @@ class _StreamTile extends ConsumerWidget {
       tileColor: theme.colorScheme.surfaceContainer,
       selectedTileColor: theme.colorScheme.secondaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      leading: CircleAvatar(
-        backgroundColor: isPlaying
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerHigh,
-        foregroundColor: isPlaying
-            ? theme.colorScheme.onPrimaryContainer
-            : theme.colorScheme.onSurface,
-        child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
+      leading: ClipPath(
+        clipper: M3eShapeClipper(
+          shape: isPlaying ? MaterialShapes.softBoom : MaterialShapes.pill,
+        ),
+        child: CircleAvatar(
+          backgroundColor: isPlaying
+              ? theme.colorScheme.primaryContainer
+              : theme.colorScheme.surfaceContainerHigh,
+          foregroundColor: isPlaying
+              ? theme.colorScheme.onPrimaryContainer
+              : theme.colorScheme.onSurface,
+          child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
+        ),
       ),
       title: Text(
         stream.title.isNotEmpty ? stream.title : 'Stream',

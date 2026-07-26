@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/channel_feed.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
+import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 
 class FeedListTile extends ConsumerWidget {
   final ChannelFeed feed;
@@ -20,14 +22,21 @@ class FeedListTile extends ConsumerWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
       selectedTileColor: theme.colorScheme.secondaryContainer,
       tileColor: theme.colorScheme.surfaceContainer,
-      leading: CircleAvatar(
-        backgroundColor: isPlaying
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.tertiaryContainer,
-        foregroundColor: isPlaying
-            ? theme.colorScheme.onPrimaryContainer
-            : theme.colorScheme.onTertiaryContainer,
-        child: const Icon(Icons.playlist_play),
+      leading: ClipPath(
+        clipper: M3eShapeClipper(
+          shape: isPlaying
+              ? MaterialShapes.softBoom
+              : MaterialShapes.cookie7Sided,
+        ),
+        child: CircleAvatar(
+          backgroundColor: isPlaying
+              ? theme.colorScheme.primaryContainer
+              : theme.colorScheme.tertiaryContainer,
+          foregroundColor: isPlaying
+              ? theme.colorScheme.onPrimaryContainer
+              : theme.colorScheme.onTertiaryContainer,
+          child: const Icon(Icons.playlist_play),
+        ),
       ),
       title: Text(
         feed.name.isNotEmpty ? feed.name : 'Default Feed',

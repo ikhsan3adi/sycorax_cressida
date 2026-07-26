@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:material3_expressive_loading_indicator/material3_expressive_loading_indicator.dart';
 
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
@@ -76,9 +77,9 @@ class _ChannelListState extends ConsumerState<ChannelList> {
   }
 
   Widget _buildLoadingTile() {
-    return const SizedBox(
-      height: 72,
-      child: Center(child: CircularProgressIndicator()),
+    return const Padding(
+      padding: EdgeInsets.all(16),
+      child: Center(child: ExpressiveLoadingIndicator()),
     );
   }
 
@@ -109,7 +110,8 @@ class _ChannelListState extends ConsumerState<ChannelList> {
     }
 
     final isWide = MediaQuery.sizeOf(context).width >= 800;
-    final childCount = state.channels.length + (state.isLoading ? 1 : 0);
+    final childCount =
+        state.channels.length + (state.isLoading ? 1 : 0) + (isWide ? 1 : 0);
 
     final masonryView = MasonryGridView.count(
       shrinkWrap: widget.shrinkWrap,
@@ -133,10 +135,7 @@ class _ChannelListState extends ConsumerState<ChannelList> {
       itemCount: childCount,
       itemBuilder: (context, index) {
         if (index >= state.channels.length) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return _buildLoadingTile();
         }
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
