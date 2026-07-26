@@ -101,6 +101,7 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Row(
+        spacing: 8,
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -108,7 +109,6 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
               ref.read(homeContentProvider.notifier).setBrowseMode();
             },
           ),
-          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +120,7 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  state.selectedFeedName ?? 'Unknown Feed',
+                  'Feed: ${state.selectedFeedName ?? 'Unknown Feed'}',
                   style: Theme.of(context).textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

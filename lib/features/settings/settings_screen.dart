@@ -22,7 +22,6 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.palette)),
             title: const Text('Theme'),
-            dense: true,
             subtitle: ThemeButton(
               mode: themeModeAsync.value ?? ThemeMode.system,
               onSelectionChanged: (Set<ThemeMode> newSelection) {

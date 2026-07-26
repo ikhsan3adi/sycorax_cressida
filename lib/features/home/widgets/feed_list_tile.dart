@@ -23,17 +23,19 @@ class FeedListTile extends ConsumerWidget {
       leading: CircleAvatar(
         backgroundColor: isPlaying
             ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerHigh,
+            : theme.colorScheme.tertiaryContainer,
         foregroundColor: isPlaying
             ? theme.colorScheme.onPrimaryContainer
-            : theme.colorScheme.onSurface,
+            : theme.colorScheme.onTertiaryContainer,
         child: const Icon(Icons.playlist_play),
       ),
       title: Text(
         feed.name.isNotEmpty ? feed.name : 'Default Feed',
         style: TextStyle(
           fontWeight: isPlaying ? FontWeight.bold : null,
-          color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
+          color: isPlaying
+              ? theme.colorScheme.onSecondaryContainer
+              : theme.colorScheme.tertiary,
         ),
       ),
       subtitle: feed.format != null

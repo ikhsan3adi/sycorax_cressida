@@ -11,8 +11,9 @@ class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
   final Widget? trailing;
   final VoidCallback? onPlayStream;
+  final _controller = ExpansibleController();
 
-  const ChannelExpansionTile({
+  ChannelExpansionTile({
     super.key,
     required this.channel,
     this.trailing,
@@ -26,6 +27,8 @@ class ChannelExpansionTile extends ConsumerWidget {
     final playerState = ref.watch(playerStateProvider);
     final isPlaying = playerState.currentStream?.channelId == channel.id;
 
+    if (isPlaying) _controller.expand();
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -37,6 +40,7 @@ class ChannelExpansionTile extends ConsumerWidget {
           child: ExpansionTile(
             key: Key('${channel.id}-${channel.name}'),
             leading: ChannelLogoImage(imageUrl: channel.logoUrl),
+            controller: _controller,
             title: Text(
               channel.name,
               maxLines: 1,
@@ -63,7 +67,7 @@ class ChannelExpansionTile extends ConsumerWidget {
                   )
                 : null,
             trailing: trailing,
-            shape: Border.all(color: Colors.transparent),
+            shape: Border.all(color: Colors.transparent, width: 0),
             children: [
               _ChannelDetails(channel: channel, onPlayStream: onPlayStream),
             ],

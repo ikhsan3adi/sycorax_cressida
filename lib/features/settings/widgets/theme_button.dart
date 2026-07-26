@@ -11,6 +11,10 @@ class ThemeButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SegmentedButton<ThemeMode>(
+        style: SegmentedButton.styleFrom(
+          iconSize: 16,
+          visualDensity: VisualDensity.compact,
+        ),
         segments: [
           const ButtonSegment(
             value: ThemeMode.system,
