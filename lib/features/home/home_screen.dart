@@ -9,6 +9,7 @@ import 'package:sycorax_cressida/features/home/providers/home_content_provider.d
 import 'package:sycorax_cressida/features/home/providers/lookup_providers.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 import 'package:sycorax_cressida/features/home/widgets/widgets.dart';
+import 'package:sycorax_cressida/shared/widgets/morphing_decoration.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -59,20 +60,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       children: [
         if (playerState.currentStream == null) ...[
-          SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Hero(
-                tag: const Key('${AppConstants.appName}-widget'),
-                child: Text(
-                  AppConstants.appName.split(' ').join('\n'),
-                  style: theme.textTheme.displayLarge?.copyWith(
-                    color: theme.colorScheme.primary,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: MorphingDecoration(height: 100, width: 100),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Hero(
+                    tag: const Key('${AppConstants.appName}-widget'),
+                    child: Text(
+                      AppConstants.appName.split(' ').join('\n'),
+                      style: theme.textTheme.displayLarge?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
           if (!isPlaceholderClosed)
             const Padding(
