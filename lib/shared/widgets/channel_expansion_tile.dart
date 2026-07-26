@@ -10,14 +10,14 @@ import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
   final Widget? trailing;
-  final VoidCallback? onPlayStream;
+  final VoidCallback? onChildTap;
   final _controller = ExpansibleController();
 
   ChannelExpansionTile({
     super.key,
     required this.channel,
     this.trailing,
-    this.onPlayStream,
+    this.onChildTap,
   });
 
   @override
@@ -69,7 +69,7 @@ class ChannelExpansionTile extends ConsumerWidget {
             trailing: trailing,
             shape: Border.all(color: Colors.transparent, width: 0),
             children: [
-              _ChannelDetails(channel: channel, onPlayStream: onPlayStream),
+              _ChannelDetails(channel: channel, onPlayStream: onChildTap),
             ],
           ),
         ),
@@ -106,6 +106,7 @@ class _ChannelDetails extends ConsumerWidget {
                                 ? feed.name
                                 : 'Default Feed',
                           );
+                      onPlayStream?.call();
                     },
                   ),
                 )

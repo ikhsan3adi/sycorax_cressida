@@ -97,35 +97,51 @@ class _StreamListViewState extends ConsumerState<StreamListView> {
   }
 
   Widget _buildHeader(BuildContext context, HomeContentState state) {
-    return Container(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        spacing: 8,
+        spacing: 16,
         children: [
-          IconButton(
+          IconButton.filledTonal(
+            color: theme.colorScheme.onTertiaryContainer,
+            style: IconButton.styleFrom(
+              backgroundColor: theme.colorScheme.tertiaryContainer,
+            ),
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               ref.read(homeContentProvider.notifier).setBrowseMode();
             },
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  state.channel?.name ?? 'Unknown Channel',
-                  style: Theme.of(context).textTheme.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  'Feed: ${state.selectedFeedName ?? 'Unknown Feed'}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.channel?.name ?? 'Unknown Channel',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    'Feed: ${state.selectedFeedName ?? 'Unknown Feed'}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -146,50 +162,44 @@ class _StreamTile extends ConsumerWidget {
     final playerState = ref.watch(playerStateProvider);
     final isPlaying = playerState.currentStream?.url == stream.url;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        color: isPlaying
-            ? theme.colorScheme.secondaryContainer
-            : theme.colorScheme.surfaceContainer,
-        child: ListTile(
-          key: Key('${channel.id}-${stream.url}'),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-          leading: CircleAvatar(
-            backgroundColor: isPlaying
-                ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceContainerHigh,
-            foregroundColor: isPlaying
-                ? theme.colorScheme.onPrimaryContainer
-                : theme.colorScheme.onSurface,
-            child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
-          ),
-          title: Text(
-            stream.title.isNotEmpty ? stream.title : 'Stream',
-            style: TextStyle(
-              fontWeight: isPlaying ? FontWeight.bold : null,
-              color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
-            ),
-          ),
-          subtitle: stream.quality != null || stream.label != null
-              ? Text(
-                  [
-                    stream.quality,
-                    stream.label,
-                  ].where((e) => e != null).join(' · '),
-                  style: TextStyle(
-                    color: isPlaying
-                        ? theme.colorScheme.onSecondaryContainer
-                        : null,
-                  ),
-                )
-              : null,
-          selected: isPlaying,
-          onTap: () {
-            ref.read(playerStateProvider.notifier).playStream(stream, channel);
-          },
+    return ListTile(
+      key: Key('${channel.id}-${stream.url}'),
+      tileColor: theme.colorScheme.surfaceContainer,
+      selectedTileColor: theme.colorScheme.secondaryContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      leading: CircleAvatar(
+        backgroundColor: isPlaying
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHigh,
+        foregroundColor: isPlaying
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface,
+        child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
+      ),
+      title: Text(
+        stream.title.isNotEmpty ? stream.title : 'Stream',
+        style: TextStyle(
+          fontWeight: isPlaying ? FontWeight.bold : null,
+          color: isPlaying ? theme.colorScheme.onSecondaryContainer : null,
         ),
       ),
+      subtitle: stream.quality != null || stream.label != null
+          ? Text(
+              [
+                stream.quality,
+                stream.label,
+              ].where((e) => e != null).join(' · '),
+              style: TextStyle(
+                color: isPlaying
+                    ? theme.colorScheme.onSecondaryContainer
+                    : null,
+              ),
+            )
+          : null,
+      selected: isPlaying,
+      onTap: () {
+        ref.read(playerStateProvider.notifier).playStream(stream, channel);
+      },
     );
   }
 }

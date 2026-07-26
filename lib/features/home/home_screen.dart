@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart' hide PlayerState;
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
@@ -49,15 +50,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final playerState = ref.watch(playerStateProvider);
     final homeState = ref.watch(homeContentProvider);
     final isMinimized = ref.watch(isPlayerMinimizedProvider);
+    final isPlaceholderClosed = ref.watch(isPlaceholderClosedProvider);
 
     return Column(
       children: [
-        if (playerState.currentStream == null)
-          const SizedBox(height: 200, child: PlayerPlaceholder())
-        else if (isMinimized)
+        if (playerState.currentStream == null) ...[
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Hero(
+                tag: const Key('${AppConstants.appName}-widget'),
+                child: Text(
+                  AppConstants.appName.split(' ').join('\n'),
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (!isPlaceholderClosed)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: PlayerPlaceholder(),
+            ),
+        ] else if (isMinimized)
           NowPlayingTile(
             playerState: playerState,
             onTap: () =>
@@ -96,6 +118,7 @@ class _PlayerControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -121,6 +144,9 @@ class _PlayerControls extends ConsumerWidget {
           ),
           IconButton.outlined(
             icon: const Icon(Icons.info),
+            style: IconButton.styleFrom(
+              foregroundColor: theme.colorScheme.tertiary,
+            ),
             onPressed: () {
               ChannelFeed? feed;
               final feedsAsync = ref.read(channelFeedsProvider(channel.id));

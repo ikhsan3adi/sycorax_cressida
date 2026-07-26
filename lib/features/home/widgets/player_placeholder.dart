@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 
 class PlayerPlaceholder extends StatelessWidget {
   const PlayerPlaceholder({super.key});
@@ -7,28 +9,50 @@ class PlayerPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      color: theme.colorScheme.secondaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.tv_off,
-                size: 48,
-                color: theme.colorScheme.onSecondaryContainer,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: theme.colorScheme.secondaryContainer,
+        padding: const EdgeInsets.all(16),
+        child: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.tv_off,
+                    size: 48,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Select a channel to start watching',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Select a channel to start watching',
-                style: TextStyle(color: theme.colorScheme.onSecondaryContainer),
-              ),
-            ],
-          ),
+            ),
+            const Align(alignment: Alignment.topRight, child: _CloseButton()),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class _CloseButton extends ConsumerWidget {
+  const _CloseButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: () {
+        ref.read(isPlaceholderClosedProvider.notifier).set(true);
+      },
     );
   }
 }

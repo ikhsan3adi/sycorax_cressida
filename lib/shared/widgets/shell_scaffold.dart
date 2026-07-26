@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_filter_provider.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
+import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
 
 class _IsSearchActive extends Notifier<bool> {
   @override
@@ -61,9 +62,16 @@ class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
   Widget build(BuildContext context) {
     final isSearchActive = ref.watch(isSearchActiveProvider);
     final isHome = widget.navigationShell.currentIndex == 0;
+    final playerState = ref.watch(playerStateProvider);
+    final isPlaying = playerState.currentStream != null;
 
     return Scaffold(
-      appBar: isHome && isSearchActive ? _searchAppBar() : _normalAppBar(),
+      appBar: isHome && isSearchActive
+          ? _searchAppBar()
+          : _normalAppBar(
+              context,
+              !isPlaying && widget.navigationShell.currentIndex == 0,
+            ),
       body: widget.navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: widget.navigationShell.currentIndex,
@@ -78,11 +86,21 @@ class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
     );
   }
 
-  AppBar _normalAppBar() {
+  AppBar _normalAppBar(BuildContext context, bool hideTitle) {
     final index = widget.navigationShell.currentIndex;
+
     return AppBar(
-      title: Text(_titles[index]),
+      title: hideTitle
+          ? null
+          : Hero(
+              tag: const Key('${AppConstants.appName}-widget'),
+              child: Text(
+                _titles[index],
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
       centerTitle: true,
+      forceMaterialTransparency: true,
       actions: index == 0
           ? [
               IconButton(

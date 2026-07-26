@@ -67,3 +67,12 @@ class _IsPlayerMinimized extends Notifier<bool> {
 final isPlayerMinimizedProvider = NotifierProvider<_IsPlayerMinimized, bool>(
   _IsPlayerMinimized.new,
 );
+
+class _IsPlaceholderClosed extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void set(bool value) => state = value;
+}
+
+final isPlaceholderClosedProvider =
+    NotifierProvider<_IsPlaceholderClosed, bool>(_IsPlaceholderClosed.new);

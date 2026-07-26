@@ -25,7 +25,7 @@ class FavoritesScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               child: ChannelExpansionTile(
                 channel: channel,
-                onPlayStream: () => context.go('/'),
+                onChildTap: () => context.go('/'),
                 trailing: FavoriteButton(
                   isFavorite: true,
                   onPressed: () async {

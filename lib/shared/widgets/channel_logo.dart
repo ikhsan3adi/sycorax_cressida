@@ -21,7 +21,7 @@ class ChannelLogoImage extends StatelessWidget {
             height: 54,
             fit: BoxFit.contain,
             errorWidget: (_, _, _) =>
-                Icon(Icons.tv, color: theme.colorScheme.onSurface),
+                Icon(Icons.tv, color: theme.colorScheme.onSurfaceVariant),
           ),
         ),
       ),
