@@ -36,6 +36,24 @@ const _destinations = [
   ),
 ];
 
+const _railDestinations = [
+  NavigationRailDestination(
+    icon: Icon(Icons.home_outlined),
+    selectedIcon: Icon(Icons.home),
+    label: Text('Home'),
+  ),
+  NavigationRailDestination(
+    icon: Icon(Icons.thumb_up_outlined),
+    selectedIcon: Icon(Icons.thumb_up),
+    label: Text('Favorites'),
+  ),
+  NavigationRailDestination(
+    icon: Icon(Icons.settings_outlined),
+    selectedIcon: Icon(Icons.settings),
+    label: Text('Settings'),
+  ),
+];
+
 const _titles = [AppConstants.appName, 'Favorites', 'Settings'];
 
 class ShellScaffold extends ConsumerStatefulWidget {
@@ -64,6 +82,8 @@ class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
     final isHome = widget.navigationShell.currentIndex == 0;
     final playerState = ref.watch(playerStateProvider);
     final isPlaying = playerState.currentStream != null;
+    final isWide = MediaQuery.sizeOf(context).width >= 600;
+    final isVeryWide = MediaQuery.sizeOf(context).width >= 960;
 
     return Scaffold(
       appBar: isHome && isSearchActive
@@ -72,17 +92,41 @@ class _ShellScaffoldState extends ConsumerState<ShellScaffold> {
               context,
               !isPlaying && widget.navigationShell.currentIndex == 0,
             ),
-      body: widget.navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: widget.navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          widget.navigationShell.goBranch(
-            index,
-            initialLocation: index == widget.navigationShell.currentIndex,
-          );
-        },
-        destinations: _destinations,
-      ),
+      body: isWide ? _buildWideBody(isVeryWide) : widget.navigationShell,
+      bottomNavigationBar: isWide ? null : _navigationBar(context),
+    );
+  }
+
+  Widget _buildWideBody(bool extended) {
+    return Row(
+      children: [
+        NavigationRail(
+          extended: extended,
+          selectedIndex: widget.navigationShell.currentIndex,
+          onDestinationSelected: (index) {
+            widget.navigationShell.goBranch(
+              index,
+              initialLocation: index == widget.navigationShell.currentIndex,
+            );
+          },
+          labelType: NavigationRailLabelType.none,
+          destinations: _railDestinations,
+        ),
+        Expanded(child: widget.navigationShell),
+      ],
+    );
+  }
+
+  NavigationBar _navigationBar(BuildContext context) {
+    return NavigationBar(
+      selectedIndex: widget.navigationShell.currentIndex,
+      onDestinationSelected: (index) {
+        widget.navigationShell.goBranch(
+          index,
+          initialLocation: index == widget.navigationShell.currentIndex,
+        );
+      },
+      destinations: _destinations,
     );
   }
 

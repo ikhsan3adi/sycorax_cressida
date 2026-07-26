@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sycorax_cressida/data/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/home_content_provider.dart';
 import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 
@@ -25,7 +26,12 @@ class FavoritesScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               child: ChannelExpansionTile(
                 channel: channel,
-                onChildTap: () => context.go('/'),
+                onChildTap: (mode) {
+                  if (mode == HomeContentMode.browse) {
+                    ref.read(homeContentProvider.notifier).setBrowseMode();
+                  }
+                  context.go('/');
+                },
                 trailing: FavoriteButton(
                   isFavorite: true,
                   onPressed: () async {

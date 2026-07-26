@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/data/providers.dart';
 import 'package:sycorax_cressida/features/favorites/providers.dart';
 import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
@@ -52,6 +54,34 @@ class _ChannelListState extends ConsumerState<ChannelList> {
   ProviderSubscription? _hideEmptyStreamsListener;
   ProviderSubscription? _hideNsfwListener;
 
+  Widget _buildTile(Channel channel) {
+    final isFav = ref.watch(isFavoriteProvider(channel.id));
+    return ChannelExpansionTile(
+      channel: channel,
+      trailing: isFav.when(
+        data: (fav) => FavoriteButton(
+          isFavorite: fav,
+          onPressed: () async {
+            await ref
+                .read(favoritesRepositoryProvider)
+                .toggleFavorite(channel.id);
+            ref.invalidate(isFavoriteProvider(channel.id));
+            ref.invalidate(favoritesListProvider);
+          },
+        ),
+        loading: () => const SizedBox.shrink(),
+        error: (_, _) => const SizedBox.shrink(),
+      ),
+    );
+  }
+
+  Widget _buildLoadingTile() {
+    return const SizedBox(
+      height: 72,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(channelListProvider);
@@ -78,10 +108,29 @@ class _ChannelListState extends ConsumerState<ChannelList> {
       );
     }
 
+    final isWide = MediaQuery.sizeOf(context).width >= 800;
+    final childCount = state.channels.length + (state.isLoading ? 1 : 0);
+
+    final masonryView = MasonryGridView.count(
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
+      crossAxisCount: 2,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      itemCount: childCount,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: true,
+      itemBuilder: (context, index) {
+        if (index >= state.channels.length) return _buildLoadingTile();
+        return _buildTile(state.channels[index]);
+      },
+    );
+
     final listView = ListView.builder(
       shrinkWrap: widget.shrinkWrap,
       physics: widget.shrinkWrap ? const NeverScrollableScrollPhysics() : null,
-      itemCount: state.channels.length + (state.isLoading ? 1 : 0),
+      itemCount: childCount,
       itemBuilder: (context, index) {
         if (index >= state.channels.length) {
           return const Padding(
@@ -89,35 +138,16 @@ class _ChannelListState extends ConsumerState<ChannelList> {
             child: Center(child: CircularProgressIndicator()),
           );
         }
-        final channel = state.channels[index];
-        final isFav = ref.watch(isFavoriteProvider(channel.id));
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-          child: ChannelExpansionTile(
-            channel: channel,
-            trailing: isFav.when(
-              data: (fav) => FavoriteButton(
-                isFavorite: fav,
-                onPressed: () async {
-                  await ref
-                      .read(favoritesRepositoryProvider)
-                      .toggleFavorite(channel.id);
-                  ref.invalidate(isFavoriteProvider(channel.id));
-                  ref.invalidate(favoritesListProvider);
-                },
-              ),
-              loading: () => const SizedBox.shrink(),
-              error: (_, _) => const SizedBox.shrink(),
-            ),
-          ),
+          child: _buildTile(state.channels[index]),
         );
       },
     );
 
-    if (widget.shrinkWrap) return listView;
+    if (widget.shrinkWrap) return isWide ? masonryView : listView;
 
-    return NotificationListener<ScrollNotification>(
+    final scrollListener = NotificationListener<ScrollNotification>(
       onNotification: (scroll) {
         if (scroll is ScrollEndNotification &&
             scroll.metrics.pixels >=
@@ -126,7 +156,13 @@ class _ChannelListState extends ConsumerState<ChannelList> {
         }
         return false;
       },
-      child: listView,
+      child: isWide ? masonryView : listView,
     );
+
+    if (isWide) {
+      return Scrollbar(child: scrollListener);
+    }
+
+    return scrollListener;
   }
 }

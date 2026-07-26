@@ -49,6 +49,7 @@ class _CloseButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
+      color: Theme.of(context).colorScheme.onSecondaryContainer,
       icon: const Icon(Icons.close),
       onPressed: () {
         ref.read(isPlaceholderClosedProvider.notifier).set(true);

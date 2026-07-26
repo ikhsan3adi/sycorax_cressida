@@ -103,9 +103,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFullPlayer(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Video(controller: _controller),
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final maxPlayerHeight = screenHeight * 0.5;
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxPlayerHeight),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Video(controller: _controller),
+        ),
+      ),
     );
   }
 }

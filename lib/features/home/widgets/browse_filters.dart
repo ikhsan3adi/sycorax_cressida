@@ -11,9 +11,9 @@ class BrowseFilters extends ConsumerWidget {
     final categoriesAsync = ref.watch(categoryListProvider);
     final countriesAsync = ref.watch(countryListProvider);
     // final languagesAsync = ref.watch(languageListProvider);
-    final selectedCategory = ref.watch(selectedCategoryProvider);
-    final selectedCountry = ref.watch(selectedCountryProvider);
-    // final selectedLanguage = ref.watch(selectedLanguageProvider);
+    final selectedCategory = ref.watch(selectedCategoryProvider).value;
+    final selectedCountry = ref.watch(selectedCountryProvider).value;
+    // final selectedLanguage = ref.watch(selectedLanguageProvider).value;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -29,7 +29,7 @@ class BrowseFilters extends ConsumerWidget {
               labelBuilder: (c) => c.name,
               valueBuilder: (c) => c.id,
               onSelected: (String? value) {
-                ref.read(selectedCategoryProvider.notifier).update(value);
+                ref.read(selectedCategoryProvider.notifier).set(value);
                 ref.read(channelListProvider.notifier).refresh();
               },
             ),
@@ -57,7 +57,7 @@ class BrowseFilters extends ConsumerWidget {
               labelBuilder: (c) => c.name,
               valueBuilder: (c) => c.code,
               onSelected: (String? value) {
-                ref.read(selectedCountryProvider.notifier).update(value);
+                ref.read(selectedCountryProvider.notifier).set(value);
                 ref.read(channelListProvider.notifier).refresh();
               },
             ),

@@ -71,9 +71,9 @@ class ChannelListNotifier extends Notifier<ChannelListState> {
     try {
       final repo = ref.read(channelRepositoryProvider);
       final search = ref.read(searchQueryProvider);
-      final category = ref.read(selectedCategoryProvider);
-      final country = ref.read(selectedCountryProvider);
-      final language = ref.read(selectedLanguageProvider);
+      final category = ref.read(selectedCategoryProvider).value;
+      final country = ref.read(selectedCountryProvider).value;
+      final language = ref.read(selectedLanguageProvider).value;
       final hideEmptyStreams = ref.read(hideEmptyStreamsProvider).value ?? true;
       final hideNsfw = ref.read(hideNsfwProvider).value ?? false;
       final newChannels = await repo.getChannels(

@@ -10,7 +10,7 @@ import 'package:sycorax_cressida/shared/widgets/widgets.dart';
 class ChannelExpansionTile extends ConsumerWidget {
   final Channel channel;
   final Widget? trailing;
-  final VoidCallback? onChildTap;
+  final Function(HomeContentMode mode)? onChildTap;
   final _controller = ExpansibleController();
 
   ChannelExpansionTile({
@@ -80,7 +80,7 @@ class ChannelExpansionTile extends ConsumerWidget {
 
 class _ChannelDetails extends ConsumerWidget {
   final Channel channel;
-  final VoidCallback? onPlayStream;
+  final Function(HomeContentMode mode)? onPlayStream;
 
   const _ChannelDetails({required this.channel, this.onPlayStream});
 
@@ -106,7 +106,7 @@ class _ChannelDetails extends ConsumerWidget {
                                 ? feed.name
                                 : 'Default Feed',
                           );
-                      onPlayStream?.call();
+                      onPlayStream?.call(HomeContentMode.streams);
                     },
                   ),
                 )
@@ -158,7 +158,7 @@ class _ChannelDetails extends ConsumerWidget {
 class _InlineStreamTile extends ConsumerWidget {
   final ChannelStream stream;
   final Channel channel;
-  final VoidCallback? onPlayStream;
+  final Function(HomeContentMode mode)? onPlayStream;
 
   const _InlineStreamTile({
     required this.stream,
@@ -209,7 +209,7 @@ class _InlineStreamTile extends ConsumerWidget {
       selected: isPlaying,
       onTap: () {
         ref.read(playerStateProvider.notifier).playStream(stream, channel);
-        onPlayStream?.call();
+        onPlayStream?.call(HomeContentMode.browse);
       },
     );
   }
