@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_new_shapes/material_new_shapes.dart';
+import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/features/settings/providers/settings_provider.dart';
@@ -37,8 +39,10 @@ class SettingsScreen extends ConsumerWidget {
       SwitchListTile(
         secondary: const CircleAvatar(child: Icon(Icons.video_collection)),
         title: const Text('Hide Channels with Empty Streams'),
-        subtitle: const Text(
-          'Channels with empty streams will be hidden from the main view.',
+        subtitle: Text(
+          hideEmptyStreamsAsync.value ?? true
+              ? 'Channels with empty streams will be hidden from the main view.'
+              : 'Channels with empty streams will be shown in the main view.',
         ),
         value: hideEmptyStreamsAsync.value ?? true,
         onChanged: (bool value) {
@@ -48,14 +52,47 @@ class SettingsScreen extends ConsumerWidget {
         },
       ),
       SwitchListTile(
-        secondary: const CircleAvatar(child: Icon(Icons.block)),
-        title: const Text('Hide NSFW Channels'),
-        subtitle: const Text(
-          'NSFW channels will be hidden from the main view.',
+        secondary: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOutSine,
+          decoration: ShapeDecoration(
+            color: hideNsfwAsync.value ?? true
+                ? theme.colorScheme.primaryContainer
+                : theme.colorScheme.error,
+            shape: MorphingShapeBorder(
+              polygon: hideNsfwAsync.value ?? true
+                  ? MaterialShapes.circle
+                  : MaterialShapes.softBoom,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              hideNsfwAsync.value ?? true
+                  ? Icons.health_and_safety
+                  : Icons.no_adult_content,
+              color: hideNsfwAsync.value ?? true
+                  ? theme.colorScheme.onPrimaryContainer
+                  : theme.colorScheme.onError,
+            ),
+          ),
+        ),
+        title: Text(
+          'Hide NSFW Channels ${hideNsfwAsync.value ?? true ? '' : '🤨🤨🤨'}',
+        ),
+        subtitle: Text(
+          hideNsfwAsync.value ?? true
+              ? 'NSFW channels will be hidden from the main view.'
+              : 'NSFW channels will be shown in the main view. 🤨',
         ),
         value: hideNsfwAsync.value ?? true,
         onChanged: (bool value) {
           ref.read(hideNsfwProvider.notifier).setHideNsfw(value);
+          if (!value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Pls touch some grass :)')),
+            );
+          }
         },
       ),
       ListTile(

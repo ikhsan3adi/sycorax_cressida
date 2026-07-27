@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 
+@Deprecated('Currently unused')
 class M3eShapeClipper extends CustomClipper<Path> {
-  final RoundedPolygon shape;
-
   M3eShapeClipper({required this.shape});
+
+  final RoundedPolygon shape;
 
   @override
   Path getClip(Size size) {

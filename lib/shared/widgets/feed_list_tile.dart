@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/channel_feed.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/shared/paintings/m3e_shape_clipper.dart';
+import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 
 class FeedListTile extends ConsumerWidget {
   final ChannelFeed feed;
@@ -22,20 +22,27 @@ class FeedListTile extends ConsumerWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
       selectedTileColor: theme.colorScheme.secondaryContainer,
       tileColor: theme.colorScheme.surfaceContainer,
-      leading: ClipPath(
-        clipper: M3eShapeClipper(
-          shape: isPlaying
-              ? MaterialShapes.softBoom
-              : MaterialShapes.cookie7Sided,
-        ),
-        child: CircleAvatar(
-          backgroundColor: isPlaying
+      leading: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOutSine,
+        decoration: ShapeDecoration(
+          color: isPlaying
               ? theme.colorScheme.primaryContainer
               : theme.colorScheme.tertiaryContainer,
-          foregroundColor: isPlaying
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onTertiaryContainer,
-          child: const Icon(Icons.playlist_play),
+          shape: MorphingShapeBorder(
+            polygon: isPlaying
+                ? MaterialShapes.cookie9Sided
+                : MaterialShapes.bun,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(
+            Icons.playlist_play,
+            color: isPlaying
+                ? theme.colorScheme.onPrimaryContainer
+                : theme.colorScheme.onTertiaryContainer,
+          ),
         ),
       ),
       title: Text(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
-import 'package:sycorax_cressida/shared/paintings/m3e_shape_clipper.dart';
+import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 
 class FavoriteButton extends StatelessWidget {
   const FavoriteButton({super.key, required this.isFavorite, this.onPressed});
@@ -11,23 +11,27 @@ class FavoriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ClipPath(
-      clipper: M3eShapeClipper(
-        shape: isFavorite
+    return Material(
+      shape: MorphingShapeBorder(
+        polygon: isFavorite
             ? MaterialShapes.softBurst
             : MaterialShapes.cookie12Sided,
       ),
-      child: IconButton.filled(
-        style: IconButton.styleFrom(
-          backgroundColor: isFavorite
-              ? theme.colorScheme.tertiaryContainer
-              : theme.colorScheme.surfaceContainerHighest,
-          foregroundColor: isFavorite
-              ? theme.colorScheme.onTertiaryContainer
-              : theme.colorScheme.onSurface,
+      clipBehavior: Clip.antiAlias,
+      color: isFavorite
+          ? theme.colorScheme.tertiaryContainer
+          : theme.colorScheme.surfaceContainerHighest,
+      child: InkWell(
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(
+            isFavorite ? Icons.thumb_up : Icons.thumb_up_outlined,
+            color: isFavorite
+                ? theme.colorScheme.onTertiaryContainer
+                : theme.colorScheme.onSurfaceVariant,
+          ),
         ),
-        icon: Icon(isFavorite ? Icons.thumb_up : Icons.thumb_up_outlined),
-        onPressed: onPressed,
       ),
     );
   }

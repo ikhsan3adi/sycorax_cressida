@@ -80,6 +80,10 @@ class BrowseFilters extends ConsumerWidget {
 
     return itemsAsync.when(
       data: (items) {
+        if (items.indexWhere((e) => valueBuilder(e) == value) == -1) {
+          value = null;
+          Future(() => onSelected(value));
+        }
         return DropdownButtonFormField<String>(
           initialValue: value,
           decoration: InputDecoration(
@@ -102,11 +106,11 @@ class BrowseFilters extends ConsumerWidget {
         );
       },
       loading: () =>
-          const SizedBox(height: 56, child: Center(child: Text('Loading...'))),
+          const SizedBox(height: 48, child: Center(child: Text('Loading...'))),
       error: (e, _) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: SizedBox(
-          height: 56,
+          height: 48,
           child: Center(
             child: Text(
               'Failed',

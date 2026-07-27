@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('Use [MorphingShapeBorder] instead')
 class CustomPathShapeBorder extends ShapeBorder {
+  const CustomPathShapeBorder({required this.rawPath});
+
   Path pathBuilder(Rect rect) {
     final Rect bounds = rawPath.getBounds();
 
@@ -16,8 +19,6 @@ class CustomPathShapeBorder extends ShapeBorder {
   }
 
   final Path rawPath;
-
-  const CustomPathShapeBorder({required this.rawPath});
 
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;

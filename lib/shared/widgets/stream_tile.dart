@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 import 'package:sycorax_cressida/features/home/providers/player_state_provider.dart';
-import 'package:sycorax_cressida/shared/paintings/m3e_shape_clipper.dart';
+import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 
 class StreamTile extends ConsumerWidget {
   final ChannelStream stream;
@@ -33,18 +33,27 @@ class StreamTile extends ConsumerWidget {
       shape: shape,
       selectedTileColor: theme.colorScheme.secondaryContainer,
       tileColor: theme.colorScheme.surfaceContainer,
-      leading: ClipPath(
-        clipper: M3eShapeClipper(
-          shape: isPlaying ? MaterialShapes.softBoom : MaterialShapes.pill,
-        ),
-        child: CircleAvatar(
-          backgroundColor: isPlaying
+      leading: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOutSine,
+        decoration: ShapeDecoration(
+          color: isPlaying
               ? theme.colorScheme.primaryContainer
               : theme.colorScheme.secondaryContainer,
-          foregroundColor: isPlaying
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onSecondaryContainer,
-          child: Icon(isPlaying ? Icons.stream : Icons.live_tv),
+          shape: MorphingShapeBorder(
+            polygon: isPlaying
+                ? MaterialShapes.cookie9Sided
+                : MaterialShapes.pill,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(
+            isPlaying ? Icons.stream : Icons.live_tv,
+            color: isPlaying
+                ? theme.colorScheme.onPrimaryContainer
+                : theme.colorScheme.onSecondaryContainer,
+          ),
         ),
       ),
       title: Text(

@@ -5,3 +5,4 @@ export 'loading.dart';
 export 'shell_scaffold.dart';
 export 'morphing_decoration.dart';
 export 'stream_tile.dart';
+export 'feed_list_tile.dart';

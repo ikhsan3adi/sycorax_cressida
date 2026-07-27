@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
-import 'package:sycorax_cressida/shared/paintings/custom_path_shape_border.dart';
+import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 
-class MorphingDecoration extends StatefulWidget {
+class MorphingDecoration extends StatelessWidget {
   final Widget? child;
   final double width;
   final double height;
@@ -17,78 +17,99 @@ class MorphingDecoration extends StatefulWidget {
   });
 
   @override
-  State<MorphingDecoration> createState() => _MorphingDecorationState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          MorphingShapeDecoration(
+            colorModifier: (color) => color.withAlpha(127),
+            turnModifier: 1,
+            randomDurationRangeMs: (1000, 3500),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: MorphingShapeDecoration(
+              colorModifier: (color) => color.withAlpha(223),
+              turnModifier: 1.8,
+              randomDurationRangeMs: (2000, 6500),
+            ),
+          ),
+
+          ?child,
+        ],
+      ),
+    );
+  }
 }
 
-class _MorphingDecorationState extends State<MorphingDecoration> {
-  late Timer _timer;
-  late Timer _timer2;
+class MorphingShapeDecoration extends StatefulWidget {
+  final double turnModifier;
+  final (int, int) randomDurationRangeMs;
+  final Color Function(Color color)? colorModifier;
 
+  const MorphingShapeDecoration({
+    super.key,
+    this.turnModifier = 1.0,
+    this.randomDurationRangeMs = (1000, 3500),
+    this.colorModifier,
+  });
+
+  @override
+  State<MorphingShapeDecoration> createState() =>
+      _MorphingShapeDecorationState();
+}
+
+class _MorphingShapeDecorationState extends State<MorphingShapeDecoration> {
   final Random _random = Random();
 
   double _currentTurns = 0.0;
-  double _currentBgTurns = 0.0;
   Duration _rotationDuration = const Duration(seconds: 2);
-  Duration _rotationBgDuration = const Duration(seconds: 3);
 
-  late ShapeBorder _currentShape;
-  late ShapeBorder _currentBgShape;
+  late RoundedPolygon _currentShape;
 
   int _currentColorIndex = 0;
-  int _currentBgColorIndex = 0;
 
-  final List<ShapeBorder> _shapes =
-      MaterialShapes.all
-          .map((shape) => CustomPathShapeBorder(rawPath: shape.toPath()))
-          .toList()
-        ..shuffle();
+  final List<RoundedPolygon> _shapes =
+      MaterialShapes.all.map((shape) => shape.normalized()).toList()..shuffle();
 
   @override
   void initState() {
     super.initState();
 
     _currentShape = _shapes.first;
-    _currentBgShape = _shapes.last;
 
-    _timer = Timer.periodic(_rotationDuration, (timer) {
-      _randomizeDecoration1();
-    });
-
-    _timer2 = Timer.periodic(_rotationBgDuration, (timer) {
-      _randomizeDecoration2();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _randomizeDecoration();
     });
   }
 
-  void _randomizeDecoration1() {
+  void _randomizeDecoration() async {
+    if (!mounted) return;
+    await Future.delayed(const Duration(milliseconds: 100));
+
     setState(() {
       _currentShape = _shapes[_random.nextInt(_shapes.length)];
-      _currentColorIndex = _random.nextInt(3);
+      _currentColorIndex = _random.nextInt(8);
 
-      final double turnAmount = _random.nextDouble() + 0.2;
+      final double turnAmount =
+          _random.nextDouble() * widget.turnModifier + 0.2;
       _currentTurns += _random.nextBool() ? turnAmount : -turnAmount;
 
-      final int randomMilliseconds = 1000 + _random.nextInt(2500);
+      final int randomMilliseconds =
+          widget.randomDurationRangeMs.$1 +
+          _random.nextInt(
+            widget.randomDurationRangeMs.$2 - widget.randomDurationRangeMs.$1,
+          );
       _rotationDuration = Duration(milliseconds: randomMilliseconds);
-    });
-  }
-
-  void _randomizeDecoration2() {
-    setState(() {
-      _currentBgShape = _shapes[_random.nextInt(_shapes.length)];
-      _currentBgColorIndex = _random.nextInt(3);
-
-      final double turnAmount = _random.nextDouble() * 1.8 + 0.2;
-      _currentBgTurns += _random.nextBool() ? turnAmount : -turnAmount;
-
-      final int randomMilliseconds = 2000 + _random.nextInt(4500);
-      _rotationBgDuration = Duration(milliseconds: randomMilliseconds);
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
-    _timer2.cancel();
     super.dispose();
   }
 
@@ -105,49 +126,23 @@ class _MorphingDecorationState extends State<MorphingDecoration> {
       theme.colorScheme.secondaryContainer,
       theme.colorScheme.tertiaryContainer,
     ];
-    return SizedBox(
-      height: widget.height,
-      width: widget.width,
-      child: Stack(
-        clipBehavior: Clip.none,
+    return AnimatedRotation(
+      turns: _currentTurns,
+      duration: _rotationDuration,
+      curve: Curves.easeInOutCubic,
+      child: AnimatedContainer(
         alignment: Alignment.center,
-        children: [
-          AnimatedRotation(
-            turns: _currentBgTurns,
-            duration: _rotationBgDuration,
-            curve: Curves.easeInOutCubic,
-            child: AnimatedContainer(
-              duration: _rotationBgDuration,
-              curve: Curves.easeOutSine,
-              width: double.infinity,
-              height: double.infinity,
-              decoration: ShapeDecoration(
-                color: colors[_currentBgColorIndex].withAlpha(128),
-                shape: _currentBgShape,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: AnimatedRotation(
-              turns: _currentTurns,
-              duration: _rotationDuration,
-              curve: Curves.easeInOutCubic,
-              child: AnimatedContainer(
-                duration: _rotationDuration,
-                curve: Curves.easeOutSine,
-                width: double.infinity,
-                height: double.infinity,
-                decoration: ShapeDecoration(
-                  color: colors[_currentColorIndex].withAlpha(223),
-                  shape: _currentShape,
-                ),
-              ),
-            ),
-          ),
-
-          if (widget.child != null) widget.child!,
-        ],
+        duration: _rotationDuration,
+        curve: Curves.easeInOutSine,
+        onEnd: _randomizeDecoration,
+        width: double.infinity,
+        height: double.infinity,
+        decoration: ShapeDecoration(
+          color: widget.colorModifier != null
+              ? widget.colorModifier!(colors[_currentColorIndex])
+              : colors[_currentColorIndex],
+          shape: MorphingShapeBorder(polygon: _currentShape),
+        ),
       ),
     );
   }
