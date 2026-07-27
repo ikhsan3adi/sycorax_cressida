@@ -18,13 +18,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get commit hash
+        id: vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "APP_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')" >> $GITHUB_OUTPUT
+          echo "GITHUB_REPO_URL=https://github.com/${{ github.repository }}" >> $GITHUB_OUTPUT
 
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
 
       - run: flutter pub get
-      - run: flutter build web --base-href /sycorax_cressida/
+      - run: |
+          flutter build web \
+            --base-href /sycorax_cressida/ \
+            --dart-define=COMMIT_HASH=${{ steps.vars.outputs.COMMIT_HASH }} \
+            --dart-define=APP_VERSION=${{ steps.vars.outputs.APP_VERSION }} \
+            --dart-define=GITHUB_REPO_URL=${{ steps.vars.outputs.GITHUB_REPO_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

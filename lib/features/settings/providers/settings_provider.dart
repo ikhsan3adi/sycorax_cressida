@@ -36,7 +36,7 @@ class HideNsfwNotifier extends AsyncNotifier<bool> {
   FutureOr<bool> build() async {
     final prefs = ref.watch(sharedPreferencesProvider);
     final value = prefs.getBool(key);
-    return value ?? false;
+    return value ?? true;
   }
 
   Future<void> setHideNsfw(bool value) async {

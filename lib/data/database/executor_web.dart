@@ -4,7 +4,7 @@ import 'package:sycorax_cressida/core/constants.dart';
 
 Future<QueryExecutor> createExecutor() async {
   final result = await WasmDatabase.open(
-    databaseName: AppConstants.dbName,
+    databaseName: Constants.dbName,
     sqlite3Uri: Uri.parse('sqlite3.wasm'),
     driftWorkerUri: Uri.parse('drift_worker.dart.js'),
   );
