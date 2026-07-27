@@ -1,6 +1,10 @@
 # Sycorax Cressida
 
-Flutter IPTV player. Cross-platform (mobile + web). Sources data from [iptv-org/api](https://github.com/iptv-org/api).
+Flutter IPTV player. Cross-platform. Sources data from [iptv-org/api](https://github.com/iptv-org/api).
+
+> [!NOTE]
+>
+> Live web version available at <http://ikhsan3adi.is-a.dev/sycorax_cressida/>
 
 <div align="center">
   <img src="./.github/image.png" width="300" />
