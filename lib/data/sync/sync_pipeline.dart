@@ -59,7 +59,5 @@ class SyncPipeline {
     await _lookupDao.upsertCountries(countries);
     await _lookupDao.upsertLanguages(languages);
     await _lookupDao.upsertCategories(categories);
-
-    await _channelDao.setSyncTime(now);
   }
 }

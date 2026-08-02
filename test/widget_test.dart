@@ -3,39 +3,26 @@ import 'dart:ui' show Size;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:drift/native.dart';
 import 'package:sycorax_cressida/app.dart';
 import 'package:sycorax_cressida/data/database/database.dart' as db;
-import 'package:sycorax_cressida/data/api/iptv_client.dart';
-import 'package:sycorax_cressida/data/models/channel.dart';
-import 'package:sycorax_cressida/data/models/channel_feed.dart';
-import 'package:sycorax_cressida/data/models/channel_stream.dart';
-import 'package:sycorax_cressida/data/models/category.dart';
-import 'package:sycorax_cressida/data/models/country.dart';
-import 'package:sycorax_cressida/data/models/language.dart';
-import 'package:sycorax_cressida/data/models/logo_entry.dart';
 import 'package:sycorax_cressida/data/providers.dart';
+import 'package:sycorax_cressida/data/sync/sync_runner.dart';
 
-class FakeIptvClient extends IptvClient {
+class _NoopSyncRunner extends SyncRunner {
   @override
-  Future<List<Channel>> getChannels() async => [];
+  Future<String> resolveDbPath() async => ':memory:';
+
   @override
-  Future<List<ChannelStream>> getStreams() async => [];
-  @override
-  Future<List<LogoEntry>> getLogos() async => [];
-  @override
-  Future<List<ChannelFeed>> getFeeds() async => [];
-  @override
-  Future<List<Country>> getCountries() async => [];
-  @override
-  Future<List<Language>> getLanguages() async => [];
-  @override
-  Future<List<Category>> getCategories() async => [];
+  Future<void> runInBackground(String dbPath, int now) async {}
 }
 
 void main() {
   MediaKit.ensureInitialized();
   testWidgets('App renders home screen', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+
     addTearDown(() {
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -45,12 +32,14 @@ void main() {
 
     final database = db.AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
+    final prefs = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
-          iptvClientProvider.overrideWithValue(FakeIptvClient()),
+          syncRunnerProvider.overrideWithValue(_NoopSyncRunner()),
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: const SycoraxCressidaApp(),
       ),
@@ -58,6 +47,6 @@ void main() {
 
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.text('Sycorax Cressida'), findsOneWidget);
+    expect(find.text('Sycorax\nCressida'), findsOneWidget);
   });
 }
