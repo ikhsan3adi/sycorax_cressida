@@ -36,8 +36,7 @@ final _lookupDaoProvider = Provider<LookupDao>((ref) {
 });
 
 final _favoriteDaoProvider = Provider<FavoriteDao>((ref) {
-  final db = ref.watch(appDatabaseProvider);
-  return FavoriteDao(db, ref.watch(_channelDaoProvider));
+  return FavoriteDao(ref.watch(appDatabaseProvider));
 });
 
 final syncRunnerProvider = Provider<SyncRunner>((ref) => SyncRunner());
@@ -60,5 +59,8 @@ final channelRepositoryProvider = Provider<ChannelRepository>((ref) {
 });
 
 final favoritesRepositoryProvider = Provider<FavoritesRepository>((ref) {
-  return FavoritesRepository(ref.watch(_favoriteDaoProvider));
+  return FavoritesRepository(
+    ref.watch(_favoriteDaoProvider),
+    ref.watch(_channelDaoProvider),
+  );
 });

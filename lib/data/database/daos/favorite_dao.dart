@@ -1,27 +1,19 @@
 import 'package:drift/drift.dart';
 import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/database/database.dart';
-import 'package:sycorax_cressida/data/database/daos/channel_dao.dart';
-import 'package:sycorax_cressida/data/models/channel.dart' as domain;
 
 class FavoriteDao {
   final AppDatabase _db;
-  final ChannelDao _channelDao;
-  FavoriteDao(this._db, this._channelDao);
+  FavoriteDao(this._db);
 
-  Future<List<domain.Channel>> getFavorites() async {
+  Future<List<String>> getFavoriteChannelIds() async {
     final rows =
         await (_db.select(_db.favorites)..orderBy([
               (t) =>
                   OrderingTerm(expression: t.addedAt, mode: OrderingMode.desc),
             ]))
             .get();
-
-    final ids = rows.map((r) => r.channelId).toList();
-    if (ids.isEmpty) return [];
-    final channels = await _channelDao.getChannelsByIds(ids);
-    final map = {for (final ch in channels) ch.id: ch};
-    return ids.map((id) => map[id]).whereType<domain.Channel>().toList();
+    return rows.map((r) => r.channelId).toList();
   }
 
   Future<bool> isFavorite(String channelId) async {
