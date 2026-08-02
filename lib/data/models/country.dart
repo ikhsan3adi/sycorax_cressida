@@ -1,3 +1,5 @@
+import 'package:sycorax_cressida/core/utils.dart';
+
 class Country {
   final String code;
   final String name;
@@ -14,7 +16,7 @@ class Country {
   factory Country.fromJson(Map<String, dynamic> json) => Country(
     code: json['code'] as String? ?? '',
     name: json['name'] as String? ?? '',
-    languages: (json['languages'] as List<dynamic>?)?.cast<String>() ?? [],
+    languages: Utils.jsonStringList(json, 'languages'),
     flag: json['flag'] as String?,
   );
 }

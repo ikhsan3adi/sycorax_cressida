@@ -1,3 +1,5 @@
+import 'package:sycorax_cressida/core/utils.dart';
+
 class ChannelFeed {
   final String id;
   final String channelId;
@@ -21,19 +23,15 @@ class ChannelFeed {
     this.format,
   });
 
-  factory ChannelFeed.fromJson(Map<String, dynamic> json) {
-    List<String> list(String key) =>
-        (json[key] as List<dynamic>?)?.cast<String>() ?? [];
-    return ChannelFeed(
-      channelId: json['channel'] as String? ?? '',
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      altNames: list('alt_names'),
-      isMain: json['is_main'] as bool? ?? false,
-      broadcastArea: list('broadcast_area'),
-      timezones: list('timezones'),
-      languages: list('languages'),
-      format: json['format'] as String?,
-    );
-  }
+  factory ChannelFeed.fromJson(Map<String, dynamic> json) => ChannelFeed(
+    channelId: json['channel'] as String? ?? '',
+    id: json['id'] as String? ?? '',
+    name: json['name'] as String? ?? '',
+    altNames: Utils.jsonStringList(json, 'alt_names'),
+    isMain: json['is_main'] as bool? ?? false,
+    broadcastArea: Utils.jsonStringList(json, 'broadcast_area'),
+    timezones: Utils.jsonStringList(json, 'timezones'),
+    languages: Utils.jsonStringList(json, 'languages'),
+    format: json['format'] as String?,
+  );
 }

@@ -1,3 +1,5 @@
+import 'package:sycorax_cressida/core/utils.dart';
+
 class Channel {
   final String id;
   final String name;
@@ -39,26 +41,22 @@ class Channel {
     this.hasStreams = true,
   });
 
-  factory Channel.fromJson(Map<String, dynamic> json) {
-    List<String> list(String key) =>
-        (json[key] as List<dynamic>?)?.cast<String>() ?? [];
-    return Channel(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      altNames: list('alt_names'),
-      network: json['network'] as String?,
-      owners: list('owners'),
-      country: json['country'] as String?,
-      subdivision: json['subdivision'] as String?,
-      city: json['city'] as String?,
-      broadcastArea: list('broadcast_area'),
-      languages: list('languages'),
-      categories: list('categories'),
-      isNsfw: json['is_nsfw'] as bool? ?? false,
-      launched: json['launched'] as String?,
-      closed: json['closed'] as String?,
-      replacedBy: json['replaced_by'] as String?,
-      website: json['website'] as String?,
-    );
-  }
+  factory Channel.fromJson(Map<String, dynamic> json) => Channel(
+    id: json['id'] as String? ?? '',
+    name: json['name'] as String? ?? '',
+    altNames: Utils.jsonStringList(json, 'alt_names'),
+    network: json['network'] as String?,
+    owners: Utils.jsonStringList(json, 'owners'),
+    country: json['country'] as String?,
+    subdivision: json['subdivision'] as String?,
+    city: json['city'] as String?,
+    broadcastArea: Utils.jsonStringList(json, 'broadcast_area'),
+    languages: Utils.jsonStringList(json, 'languages'),
+    categories: Utils.jsonStringList(json, 'categories'),
+    isNsfw: json['is_nsfw'] as bool? ?? false,
+    launched: json['launched'] as String?,
+    closed: json['closed'] as String?,
+    replacedBy: json['replaced_by'] as String?,
+    website: json['website'] as String?,
+  );
 }
