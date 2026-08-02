@@ -4,7 +4,7 @@ class Constants {
   static const int cacheTtlSeconds = 24 * 60 * 60;
 
   static const int pageLimit = 50;
-  static const int syncDebounceSeconds = 60;
+  static const int dbBusyTimeoutMs = 5000;
   static const double scrollThreshold = 200;
 }
 

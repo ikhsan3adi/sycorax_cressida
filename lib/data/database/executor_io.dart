@@ -8,5 +8,11 @@ import 'package:sycorax_cressida/core/constants.dart';
 Future<QueryExecutor> createExecutor() async {
   final dir = await getApplicationDocumentsDirectory();
   final file = File(p.join(dir.path, Constants.dbName));
-  return NativeDatabase.createInBackground(file);
+  return NativeDatabase.createInBackground(
+    file,
+    setup: (raw) {
+      raw.execute('PRAGMA journal_mode=WAL');
+      raw.execute('PRAGMA busy_timeout=${Constants.dbBusyTimeoutMs}');
+    },
+  );
 }

@@ -117,23 +117,21 @@ class ChannelDao {
   Future<void> resolvePrimaryLogos(
     List<({String channel, bool inUse, String url})> logos,
   ) async {
-    final sorted = [...logos]
-      ..sort((a, b) {
-        if (a.inUse && !b.inUse) return -1;
-        if (!a.inUse && b.inUse) return 1;
-        return 0;
-      });
-    final map = <String, String>{};
-    for (final l in sorted) {
+    final picked = <String, ({bool inUse, String url})>{};
+    for (final l in logos) {
       if (l.url.isEmpty) continue;
-      map.putIfAbsent(l.channel, () => l.url);
+      final cur = picked[l.channel];
+      if (cur == null || (l.inUse && !cur.inUse)) {
+        picked[l.channel] = (inUse: l.inUse, url: l.url);
+      }
     }
+    if (picked.isEmpty) return;
     await _db.batch((batch) {
-      for (final e in map.entries) {
+      for (final entry in picked.entries) {
         batch.update(
           _db.channels,
-          ChannelsCompanion(logoUrl: Value(e.value)),
-          where: (t) => t.id.equals(e.key),
+          ChannelsCompanion(logoUrl: Value(entry.value.url)),
+          where: (t) => t.id.equals(entry.key),
         );
       }
     });
