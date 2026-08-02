@@ -33,7 +33,7 @@ class LookupDao {
           CountriesCompanion.insert(
             code: c.code,
             name: c.name,
-            languages: AppDatabase.toJsonArray(c.languages),
+            languages: c.languages,
             flag: Value(c.flag),
           ),
           mode: InsertMode.insertOrReplace,
@@ -73,7 +73,7 @@ class LookupDao {
   domain.Country _mapCountry(Country r) => domain.Country(
     code: r.code,
     name: r.name,
-    languages: AppDatabase.parseJsonArray(r.languages),
+    languages: r.languages,
     flag: r.flag,
   );
 

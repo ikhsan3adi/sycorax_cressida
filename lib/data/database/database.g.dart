@@ -26,17 +26,15 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _altNamesMeta = const VerificationMeta(
-    'altNames',
-  );
   @override
-  late final GeneratedColumn<String> altNames = GeneratedColumn<String>(
-    'alt_names',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> altNames =
+      GeneratedColumn<String>(
+        'alt_names',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($ChannelsTable.$converteraltNames);
   static const VerificationMeta _networkMeta = const VerificationMeta(
     'network',
   );
@@ -48,15 +46,15 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _ownersMeta = const VerificationMeta('owners');
   @override
-  late final GeneratedColumn<String> owners = GeneratedColumn<String>(
-    'owners',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> owners =
+      GeneratedColumn<String>(
+        'owners',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($ChannelsTable.$converterowners);
   static const VerificationMeta _countryMeta = const VerificationMeta(
     'country',
   );
@@ -88,39 +86,33 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _broadcastAreaMeta = const VerificationMeta(
-    'broadcastArea',
-  );
   @override
-  late final GeneratedColumn<String> broadcastArea = GeneratedColumn<String>(
+  late final GeneratedColumnWithTypeConverter<List<String>, String>
+  broadcastArea = GeneratedColumn<String>(
     'broadcast_area',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _languagesMeta = const VerificationMeta(
-    'languages',
-  );
+  ).withConverter<List<String>>($ChannelsTable.$converterbroadcastArea);
   @override
-  late final GeneratedColumn<String> languages = GeneratedColumn<String>(
-    'languages',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _categoriesMeta = const VerificationMeta(
-    'categories',
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> languages =
+      GeneratedColumn<String>(
+        'languages',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($ChannelsTable.$converterlanguages);
   @override
-  late final GeneratedColumn<String> categories = GeneratedColumn<String>(
-    'categories',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> categories =
+      GeneratedColumn<String>(
+        'categories',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($ChannelsTable.$convertercategories);
   static const VerificationMeta _isNsfwMeta = const VerificationMeta('isNsfw');
   @override
   late final GeneratedColumn<bool> isNsfw = GeneratedColumn<bool>(
@@ -259,27 +251,11 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('alt_names')) {
-      context.handle(
-        _altNamesMeta,
-        altNames.isAcceptableOrUnknown(data['alt_names']!, _altNamesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_altNamesMeta);
-    }
     if (data.containsKey('network')) {
       context.handle(
         _networkMeta,
         network.isAcceptableOrUnknown(data['network']!, _networkMeta),
       );
-    }
-    if (data.containsKey('owners')) {
-      context.handle(
-        _ownersMeta,
-        owners.isAcceptableOrUnknown(data['owners']!, _ownersMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_ownersMeta);
     }
     if (data.containsKey('country')) {
       context.handle(
@@ -301,33 +277,6 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         _cityMeta,
         city.isAcceptableOrUnknown(data['city']!, _cityMeta),
       );
-    }
-    if (data.containsKey('broadcast_area')) {
-      context.handle(
-        _broadcastAreaMeta,
-        broadcastArea.isAcceptableOrUnknown(
-          data['broadcast_area']!,
-          _broadcastAreaMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_broadcastAreaMeta);
-    }
-    if (data.containsKey('languages')) {
-      context.handle(
-        _languagesMeta,
-        languages.isAcceptableOrUnknown(data['languages']!, _languagesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_languagesMeta);
-    }
-    if (data.containsKey('categories')) {
-      context.handle(
-        _categoriesMeta,
-        categories.isAcceptableOrUnknown(data['categories']!, _categoriesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_categoriesMeta);
     }
     if (data.containsKey('is_nsfw')) {
       context.handle(
@@ -398,18 +347,22 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      altNames: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}alt_names'],
-      )!,
+      altNames: $ChannelsTable.$converteraltNames.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}alt_names'],
+        )!,
+      ),
       network: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}network'],
       ),
-      owners: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}owners'],
-      )!,
+      owners: $ChannelsTable.$converterowners.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}owners'],
+        )!,
+      ),
       country: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}country'],
@@ -422,18 +375,24 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         DriftSqlType.string,
         data['${effectivePrefix}city'],
       ),
-      broadcastArea: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}broadcast_area'],
-      )!,
-      languages: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}languages'],
-      )!,
-      categories: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}categories'],
-      )!,
+      broadcastArea: $ChannelsTable.$converterbroadcastArea.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}broadcast_area'],
+        )!,
+      ),
+      languages: $ChannelsTable.$converterlanguages.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}languages'],
+        )!,
+      ),
+      categories: $ChannelsTable.$convertercategories.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}categories'],
+        )!,
+      ),
       isNsfw: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_nsfw'],
@@ -473,20 +432,31 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   $ChannelsTable createAlias(String alias) {
     return $ChannelsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $converteraltNames =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $converterowners =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $converterbroadcastArea =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $converterlanguages =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $convertercategories =
+      stringListConverter;
 }
 
 class Channel extends DataClass implements Insertable<Channel> {
   final String id;
   final String name;
-  final String altNames;
+  final List<String> altNames;
   final String? network;
-  final String owners;
+  final List<String> owners;
   final String? country;
   final String? subdivision;
   final String? city;
-  final String broadcastArea;
-  final String languages;
-  final String categories;
+  final List<String> broadcastArea;
+  final List<String> languages;
+  final List<String> categories;
   final bool isNsfw;
   final String? launched;
   final String? closed;
@@ -521,11 +491,19 @@ class Channel extends DataClass implements Insertable<Channel> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
-    map['alt_names'] = Variable<String>(altNames);
+    {
+      map['alt_names'] = Variable<String>(
+        $ChannelsTable.$converteraltNames.toSql(altNames),
+      );
+    }
     if (!nullToAbsent || network != null) {
       map['network'] = Variable<String>(network);
     }
-    map['owners'] = Variable<String>(owners);
+    {
+      map['owners'] = Variable<String>(
+        $ChannelsTable.$converterowners.toSql(owners),
+      );
+    }
     if (!nullToAbsent || country != null) {
       map['country'] = Variable<String>(country);
     }
@@ -535,9 +513,21 @@ class Channel extends DataClass implements Insertable<Channel> {
     if (!nullToAbsent || city != null) {
       map['city'] = Variable<String>(city);
     }
-    map['broadcast_area'] = Variable<String>(broadcastArea);
-    map['languages'] = Variable<String>(languages);
-    map['categories'] = Variable<String>(categories);
+    {
+      map['broadcast_area'] = Variable<String>(
+        $ChannelsTable.$converterbroadcastArea.toSql(broadcastArea),
+      );
+    }
+    {
+      map['languages'] = Variable<String>(
+        $ChannelsTable.$converterlanguages.toSql(languages),
+      );
+    }
+    {
+      map['categories'] = Variable<String>(
+        $ChannelsTable.$convertercategories.toSql(categories),
+      );
+    }
     map['is_nsfw'] = Variable<bool>(isNsfw);
     if (!nullToAbsent || launched != null) {
       map['launched'] = Variable<String>(launched);
@@ -607,15 +597,15 @@ class Channel extends DataClass implements Insertable<Channel> {
     return Channel(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      altNames: serializer.fromJson<String>(json['altNames']),
+      altNames: serializer.fromJson<List<String>>(json['altNames']),
       network: serializer.fromJson<String?>(json['network']),
-      owners: serializer.fromJson<String>(json['owners']),
+      owners: serializer.fromJson<List<String>>(json['owners']),
       country: serializer.fromJson<String?>(json['country']),
       subdivision: serializer.fromJson<String?>(json['subdivision']),
       city: serializer.fromJson<String?>(json['city']),
-      broadcastArea: serializer.fromJson<String>(json['broadcastArea']),
-      languages: serializer.fromJson<String>(json['languages']),
-      categories: serializer.fromJson<String>(json['categories']),
+      broadcastArea: serializer.fromJson<List<String>>(json['broadcastArea']),
+      languages: serializer.fromJson<List<String>>(json['languages']),
+      categories: serializer.fromJson<List<String>>(json['categories']),
       isNsfw: serializer.fromJson<bool>(json['isNsfw']),
       launched: serializer.fromJson<String?>(json['launched']),
       closed: serializer.fromJson<String?>(json['closed']),
@@ -632,15 +622,15 @@ class Channel extends DataClass implements Insertable<Channel> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
-      'altNames': serializer.toJson<String>(altNames),
+      'altNames': serializer.toJson<List<String>>(altNames),
       'network': serializer.toJson<String?>(network),
-      'owners': serializer.toJson<String>(owners),
+      'owners': serializer.toJson<List<String>>(owners),
       'country': serializer.toJson<String?>(country),
       'subdivision': serializer.toJson<String?>(subdivision),
       'city': serializer.toJson<String?>(city),
-      'broadcastArea': serializer.toJson<String>(broadcastArea),
-      'languages': serializer.toJson<String>(languages),
-      'categories': serializer.toJson<String>(categories),
+      'broadcastArea': serializer.toJson<List<String>>(broadcastArea),
+      'languages': serializer.toJson<List<String>>(languages),
+      'categories': serializer.toJson<List<String>>(categories),
       'isNsfw': serializer.toJson<bool>(isNsfw),
       'launched': serializer.toJson<String?>(launched),
       'closed': serializer.toJson<String?>(closed),
@@ -655,15 +645,15 @@ class Channel extends DataClass implements Insertable<Channel> {
   Channel copyWith({
     String? id,
     String? name,
-    String? altNames,
+    List<String>? altNames,
     Value<String?> network = const Value.absent(),
-    String? owners,
+    List<String>? owners,
     Value<String?> country = const Value.absent(),
     Value<String?> subdivision = const Value.absent(),
     Value<String?> city = const Value.absent(),
-    String? broadcastArea,
-    String? languages,
-    String? categories,
+    List<String>? broadcastArea,
+    List<String>? languages,
+    List<String>? categories,
     bool? isNsfw,
     Value<String?> launched = const Value.absent(),
     Value<String?> closed = const Value.absent(),
@@ -803,15 +793,15 @@ class Channel extends DataClass implements Insertable<Channel> {
 class ChannelsCompanion extends UpdateCompanion<Channel> {
   final Value<String> id;
   final Value<String> name;
-  final Value<String> altNames;
+  final Value<List<String>> altNames;
   final Value<String?> network;
-  final Value<String> owners;
+  final Value<List<String>> owners;
   final Value<String?> country;
   final Value<String?> subdivision;
   final Value<String?> city;
-  final Value<String> broadcastArea;
-  final Value<String> languages;
-  final Value<String> categories;
+  final Value<List<String>> broadcastArea;
+  final Value<List<String>> languages;
+  final Value<List<String>> categories;
   final Value<bool> isNsfw;
   final Value<String?> launched;
   final Value<String?> closed;
@@ -846,15 +836,15 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   ChannelsCompanion.insert({
     required String id,
     required String name,
-    required String altNames,
+    required List<String> altNames,
     this.network = const Value.absent(),
-    required String owners,
+    required List<String> owners,
     this.country = const Value.absent(),
     this.subdivision = const Value.absent(),
     this.city = const Value.absent(),
-    required String broadcastArea,
-    required String languages,
-    required String categories,
+    required List<String> broadcastArea,
+    required List<String> languages,
+    required List<String> categories,
     required bool isNsfw,
     this.launched = const Value.absent(),
     this.closed = const Value.absent(),
@@ -922,15 +912,15 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   ChannelsCompanion copyWith({
     Value<String>? id,
     Value<String>? name,
-    Value<String>? altNames,
+    Value<List<String>>? altNames,
     Value<String?>? network,
-    Value<String>? owners,
+    Value<List<String>>? owners,
     Value<String?>? country,
     Value<String?>? subdivision,
     Value<String?>? city,
-    Value<String>? broadcastArea,
-    Value<String>? languages,
-    Value<String>? categories,
+    Value<List<String>>? broadcastArea,
+    Value<List<String>>? languages,
+    Value<List<String>>? categories,
     Value<bool>? isNsfw,
     Value<String?>? launched,
     Value<String?>? closed,
@@ -975,13 +965,17 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       map['name'] = Variable<String>(name.value);
     }
     if (altNames.present) {
-      map['alt_names'] = Variable<String>(altNames.value);
+      map['alt_names'] = Variable<String>(
+        $ChannelsTable.$converteraltNames.toSql(altNames.value),
+      );
     }
     if (network.present) {
       map['network'] = Variable<String>(network.value);
     }
     if (owners.present) {
-      map['owners'] = Variable<String>(owners.value);
+      map['owners'] = Variable<String>(
+        $ChannelsTable.$converterowners.toSql(owners.value),
+      );
     }
     if (country.present) {
       map['country'] = Variable<String>(country.value);
@@ -993,13 +987,19 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       map['city'] = Variable<String>(city.value);
     }
     if (broadcastArea.present) {
-      map['broadcast_area'] = Variable<String>(broadcastArea.value);
+      map['broadcast_area'] = Variable<String>(
+        $ChannelsTable.$converterbroadcastArea.toSql(broadcastArea.value),
+      );
     }
     if (languages.present) {
-      map['languages'] = Variable<String>(languages.value);
+      map['languages'] = Variable<String>(
+        $ChannelsTable.$converterlanguages.toSql(languages.value),
+      );
     }
     if (categories.present) {
-      map['categories'] = Variable<String>(categories.value);
+      map['categories'] = Variable<String>(
+        $ChannelsTable.$convertercategories.toSql(categories.value),
+      );
     }
     if (isNsfw.present) {
       map['is_nsfw'] = Variable<bool>(isNsfw.value);
@@ -1093,17 +1093,15 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _altNamesMeta = const VerificationMeta(
-    'altNames',
-  );
   @override
-  late final GeneratedColumn<String> altNames = GeneratedColumn<String>(
-    'alt_names',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> altNames =
+      GeneratedColumn<String>(
+        'alt_names',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($FeedsTable.$converteraltNames);
   static const VerificationMeta _isMainMeta = const VerificationMeta('isMain');
   @override
   late final GeneratedColumn<bool> isMain = GeneratedColumn<bool>(
@@ -1116,39 +1114,33 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
       'CHECK ("is_main" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _broadcastAreaMeta = const VerificationMeta(
-    'broadcastArea',
-  );
   @override
-  late final GeneratedColumn<String> broadcastArea = GeneratedColumn<String>(
+  late final GeneratedColumnWithTypeConverter<List<String>, String>
+  broadcastArea = GeneratedColumn<String>(
     'broadcast_area',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _timezonesMeta = const VerificationMeta(
-    'timezones',
-  );
+  ).withConverter<List<String>>($FeedsTable.$converterbroadcastArea);
   @override
-  late final GeneratedColumn<String> timezones = GeneratedColumn<String>(
-    'timezones',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _languagesMeta = const VerificationMeta(
-    'languages',
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> timezones =
+      GeneratedColumn<String>(
+        'timezones',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($FeedsTable.$convertertimezones);
   @override
-  late final GeneratedColumn<String> languages = GeneratedColumn<String>(
-    'languages',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> languages =
+      GeneratedColumn<String>(
+        'languages',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($FeedsTable.$converterlanguages);
   static const VerificationMeta _formatMeta = const VerificationMeta('format');
   @override
   late final GeneratedColumn<String> format = GeneratedColumn<String>(
@@ -1203,14 +1195,6 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('alt_names')) {
-      context.handle(
-        _altNamesMeta,
-        altNames.isAcceptableOrUnknown(data['alt_names']!, _altNamesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_altNamesMeta);
-    }
     if (data.containsKey('is_main')) {
       context.handle(
         _isMainMeta,
@@ -1218,33 +1202,6 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
       );
     } else if (isInserting) {
       context.missing(_isMainMeta);
-    }
-    if (data.containsKey('broadcast_area')) {
-      context.handle(
-        _broadcastAreaMeta,
-        broadcastArea.isAcceptableOrUnknown(
-          data['broadcast_area']!,
-          _broadcastAreaMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_broadcastAreaMeta);
-    }
-    if (data.containsKey('timezones')) {
-      context.handle(
-        _timezonesMeta,
-        timezones.isAcceptableOrUnknown(data['timezones']!, _timezonesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_timezonesMeta);
-    }
-    if (data.containsKey('languages')) {
-      context.handle(
-        _languagesMeta,
-        languages.isAcceptableOrUnknown(data['languages']!, _languagesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_languagesMeta);
     }
     if (data.containsKey('format')) {
       context.handle(
@@ -1273,26 +1230,34 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      altNames: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}alt_names'],
-      )!,
+      altNames: $FeedsTable.$converteraltNames.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}alt_names'],
+        )!,
+      ),
       isMain: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_main'],
       )!,
-      broadcastArea: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}broadcast_area'],
-      )!,
-      timezones: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}timezones'],
-      )!,
-      languages: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}languages'],
-      )!,
+      broadcastArea: $FeedsTable.$converterbroadcastArea.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}broadcast_area'],
+        )!,
+      ),
+      timezones: $FeedsTable.$convertertimezones.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}timezones'],
+        )!,
+      ),
+      languages: $FeedsTable.$converterlanguages.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}languages'],
+        )!,
+      ),
       format: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}format'],
@@ -1304,17 +1269,26 @@ class $FeedsTable extends Feeds with TableInfo<$FeedsTable, Feed> {
   $FeedsTable createAlias(String alias) {
     return $FeedsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $converteraltNames =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $converterbroadcastArea =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $convertertimezones =
+      stringListConverter;
+  static TypeConverter<List<String>, String> $converterlanguages =
+      stringListConverter;
 }
 
 class Feed extends DataClass implements Insertable<Feed> {
   final String id;
   final String channelId;
   final String name;
-  final String altNames;
+  final List<String> altNames;
   final bool isMain;
-  final String broadcastArea;
-  final String timezones;
-  final String languages;
+  final List<String> broadcastArea;
+  final List<String> timezones;
+  final List<String> languages;
   final String? format;
   const Feed({
     required this.id,
@@ -1333,11 +1307,27 @@ class Feed extends DataClass implements Insertable<Feed> {
     map['id'] = Variable<String>(id);
     map['channel_id'] = Variable<String>(channelId);
     map['name'] = Variable<String>(name);
-    map['alt_names'] = Variable<String>(altNames);
+    {
+      map['alt_names'] = Variable<String>(
+        $FeedsTable.$converteraltNames.toSql(altNames),
+      );
+    }
     map['is_main'] = Variable<bool>(isMain);
-    map['broadcast_area'] = Variable<String>(broadcastArea);
-    map['timezones'] = Variable<String>(timezones);
-    map['languages'] = Variable<String>(languages);
+    {
+      map['broadcast_area'] = Variable<String>(
+        $FeedsTable.$converterbroadcastArea.toSql(broadcastArea),
+      );
+    }
+    {
+      map['timezones'] = Variable<String>(
+        $FeedsTable.$convertertimezones.toSql(timezones),
+      );
+    }
+    {
+      map['languages'] = Variable<String>(
+        $FeedsTable.$converterlanguages.toSql(languages),
+      );
+    }
     if (!nullToAbsent || format != null) {
       map['format'] = Variable<String>(format);
     }
@@ -1369,11 +1359,11 @@ class Feed extends DataClass implements Insertable<Feed> {
       id: serializer.fromJson<String>(json['id']),
       channelId: serializer.fromJson<String>(json['channelId']),
       name: serializer.fromJson<String>(json['name']),
-      altNames: serializer.fromJson<String>(json['altNames']),
+      altNames: serializer.fromJson<List<String>>(json['altNames']),
       isMain: serializer.fromJson<bool>(json['isMain']),
-      broadcastArea: serializer.fromJson<String>(json['broadcastArea']),
-      timezones: serializer.fromJson<String>(json['timezones']),
-      languages: serializer.fromJson<String>(json['languages']),
+      broadcastArea: serializer.fromJson<List<String>>(json['broadcastArea']),
+      timezones: serializer.fromJson<List<String>>(json['timezones']),
+      languages: serializer.fromJson<List<String>>(json['languages']),
       format: serializer.fromJson<String?>(json['format']),
     );
   }
@@ -1384,11 +1374,11 @@ class Feed extends DataClass implements Insertable<Feed> {
       'id': serializer.toJson<String>(id),
       'channelId': serializer.toJson<String>(channelId),
       'name': serializer.toJson<String>(name),
-      'altNames': serializer.toJson<String>(altNames),
+      'altNames': serializer.toJson<List<String>>(altNames),
       'isMain': serializer.toJson<bool>(isMain),
-      'broadcastArea': serializer.toJson<String>(broadcastArea),
-      'timezones': serializer.toJson<String>(timezones),
-      'languages': serializer.toJson<String>(languages),
+      'broadcastArea': serializer.toJson<List<String>>(broadcastArea),
+      'timezones': serializer.toJson<List<String>>(timezones),
+      'languages': serializer.toJson<List<String>>(languages),
       'format': serializer.toJson<String?>(format),
     };
   }
@@ -1397,11 +1387,11 @@ class Feed extends DataClass implements Insertable<Feed> {
     String? id,
     String? channelId,
     String? name,
-    String? altNames,
+    List<String>? altNames,
     bool? isMain,
-    String? broadcastArea,
-    String? timezones,
-    String? languages,
+    List<String>? broadcastArea,
+    List<String>? timezones,
+    List<String>? languages,
     Value<String?> format = const Value.absent(),
   }) => Feed(
     id: id ?? this.id,
@@ -1477,11 +1467,11 @@ class FeedsCompanion extends UpdateCompanion<Feed> {
   final Value<String> id;
   final Value<String> channelId;
   final Value<String> name;
-  final Value<String> altNames;
+  final Value<List<String>> altNames;
   final Value<bool> isMain;
-  final Value<String> broadcastArea;
-  final Value<String> timezones;
-  final Value<String> languages;
+  final Value<List<String>> broadcastArea;
+  final Value<List<String>> timezones;
+  final Value<List<String>> languages;
   final Value<String?> format;
   final Value<int> rowid;
   const FeedsCompanion({
@@ -1500,11 +1490,11 @@ class FeedsCompanion extends UpdateCompanion<Feed> {
     required String id,
     required String channelId,
     required String name,
-    required String altNames,
+    required List<String> altNames,
     required bool isMain,
-    required String broadcastArea,
-    required String timezones,
-    required String languages,
+    required List<String> broadcastArea,
+    required List<String> timezones,
+    required List<String> languages,
     this.format = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1545,11 +1535,11 @@ class FeedsCompanion extends UpdateCompanion<Feed> {
     Value<String>? id,
     Value<String>? channelId,
     Value<String>? name,
-    Value<String>? altNames,
+    Value<List<String>>? altNames,
     Value<bool>? isMain,
-    Value<String>? broadcastArea,
-    Value<String>? timezones,
-    Value<String>? languages,
+    Value<List<String>>? broadcastArea,
+    Value<List<String>>? timezones,
+    Value<List<String>>? languages,
     Value<String?>? format,
     Value<int>? rowid,
   }) {
@@ -1580,19 +1570,27 @@ class FeedsCompanion extends UpdateCompanion<Feed> {
       map['name'] = Variable<String>(name.value);
     }
     if (altNames.present) {
-      map['alt_names'] = Variable<String>(altNames.value);
+      map['alt_names'] = Variable<String>(
+        $FeedsTable.$converteraltNames.toSql(altNames.value),
+      );
     }
     if (isMain.present) {
       map['is_main'] = Variable<bool>(isMain.value);
     }
     if (broadcastArea.present) {
-      map['broadcast_area'] = Variable<String>(broadcastArea.value);
+      map['broadcast_area'] = Variable<String>(
+        $FeedsTable.$converterbroadcastArea.toSql(broadcastArea.value),
+      );
     }
     if (timezones.present) {
-      map['timezones'] = Variable<String>(timezones.value);
+      map['timezones'] = Variable<String>(
+        $FeedsTable.$convertertimezones.toSql(timezones.value),
+      );
     }
     if (languages.present) {
-      map['languages'] = Variable<String>(languages.value);
+      map['languages'] = Variable<String>(
+        $FeedsTable.$converterlanguages.toSql(languages.value),
+      );
     }
     if (format.present) {
       map['format'] = Variable<String>(format.value);
@@ -2238,17 +2236,15 @@ class $CountriesTable extends Countries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _languagesMeta = const VerificationMeta(
-    'languages',
-  );
   @override
-  late final GeneratedColumn<String> languages = GeneratedColumn<String>(
-    'languages',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> languages =
+      GeneratedColumn<String>(
+        'languages',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($CountriesTable.$converterlanguages);
   static const VerificationMeta _flagMeta = const VerificationMeta('flag');
   @override
   late final GeneratedColumn<String> flag = GeneratedColumn<String>(
@@ -2288,14 +2284,6 @@ class $CountriesTable extends Countries
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('languages')) {
-      context.handle(
-        _languagesMeta,
-        languages.isAcceptableOrUnknown(data['languages']!, _languagesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_languagesMeta);
-    }
     if (data.containsKey('flag')) {
       context.handle(
         _flagMeta,
@@ -2319,10 +2307,12 @@ class $CountriesTable extends Countries
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      languages: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}languages'],
-      )!,
+      languages: $CountriesTable.$converterlanguages.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}languages'],
+        )!,
+      ),
       flag: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}flag'],
@@ -2334,12 +2324,15 @@ class $CountriesTable extends Countries
   $CountriesTable createAlias(String alias) {
     return $CountriesTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $converterlanguages =
+      stringListConverter;
 }
 
 class Country extends DataClass implements Insertable<Country> {
   final String code;
   final String name;
-  final String languages;
+  final List<String> languages;
   final String? flag;
   const Country({
     required this.code,
@@ -2352,7 +2345,11 @@ class Country extends DataClass implements Insertable<Country> {
     final map = <String, Expression>{};
     map['code'] = Variable<String>(code);
     map['name'] = Variable<String>(name);
-    map['languages'] = Variable<String>(languages);
+    {
+      map['languages'] = Variable<String>(
+        $CountriesTable.$converterlanguages.toSql(languages),
+      );
+    }
     if (!nullToAbsent || flag != null) {
       map['flag'] = Variable<String>(flag);
     }
@@ -2376,7 +2373,7 @@ class Country extends DataClass implements Insertable<Country> {
     return Country(
       code: serializer.fromJson<String>(json['code']),
       name: serializer.fromJson<String>(json['name']),
-      languages: serializer.fromJson<String>(json['languages']),
+      languages: serializer.fromJson<List<String>>(json['languages']),
       flag: serializer.fromJson<String?>(json['flag']),
     );
   }
@@ -2386,7 +2383,7 @@ class Country extends DataClass implements Insertable<Country> {
     return <String, dynamic>{
       'code': serializer.toJson<String>(code),
       'name': serializer.toJson<String>(name),
-      'languages': serializer.toJson<String>(languages),
+      'languages': serializer.toJson<List<String>>(languages),
       'flag': serializer.toJson<String?>(flag),
     };
   }
@@ -2394,7 +2391,7 @@ class Country extends DataClass implements Insertable<Country> {
   Country copyWith({
     String? code,
     String? name,
-    String? languages,
+    List<String>? languages,
     Value<String?> flag = const Value.absent(),
   }) => Country(
     code: code ?? this.code,
@@ -2437,7 +2434,7 @@ class Country extends DataClass implements Insertable<Country> {
 class CountriesCompanion extends UpdateCompanion<Country> {
   final Value<String> code;
   final Value<String> name;
-  final Value<String> languages;
+  final Value<List<String>> languages;
   final Value<String?> flag;
   final Value<int> rowid;
   const CountriesCompanion({
@@ -2450,7 +2447,7 @@ class CountriesCompanion extends UpdateCompanion<Country> {
   CountriesCompanion.insert({
     required String code,
     required String name,
-    required String languages,
+    required List<String> languages,
     this.flag = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : code = Value(code),
@@ -2475,7 +2472,7 @@ class CountriesCompanion extends UpdateCompanion<Country> {
   CountriesCompanion copyWith({
     Value<String>? code,
     Value<String>? name,
-    Value<String>? languages,
+    Value<List<String>>? languages,
     Value<String?>? flag,
     Value<int>? rowid,
   }) {
@@ -2498,7 +2495,9 @@ class CountriesCompanion extends UpdateCompanion<Country> {
       map['name'] = Variable<String>(name.value);
     }
     if (languages.present) {
-      map['languages'] = Variable<String>(languages.value);
+      map['languages'] = Variable<String>(
+        $CountriesTable.$converterlanguages.toSql(languages.value),
+      );
     }
     if (flag.present) {
       map['flag'] = Variable<String>(flag.value);
@@ -3238,15 +3237,15 @@ typedef $$ChannelsTableCreateCompanionBuilder =
     ChannelsCompanion Function({
       required String id,
       required String name,
-      required String altNames,
+      required List<String> altNames,
       Value<String?> network,
-      required String owners,
+      required List<String> owners,
       Value<String?> country,
       Value<String?> subdivision,
       Value<String?> city,
-      required String broadcastArea,
-      required String languages,
-      required String categories,
+      required List<String> broadcastArea,
+      required List<String> languages,
+      required List<String> categories,
       required bool isNsfw,
       Value<String?> launched,
       Value<String?> closed,
@@ -3261,15 +3260,15 @@ typedef $$ChannelsTableUpdateCompanionBuilder =
     ChannelsCompanion Function({
       Value<String> id,
       Value<String> name,
-      Value<String> altNames,
+      Value<List<String>> altNames,
       Value<String?> network,
-      Value<String> owners,
+      Value<List<String>> owners,
       Value<String?> country,
       Value<String?> subdivision,
       Value<String?> city,
-      Value<String> broadcastArea,
-      Value<String> languages,
-      Value<String> categories,
+      Value<List<String>> broadcastArea,
+      Value<List<String>> languages,
+      Value<List<String>> categories,
       Value<bool> isNsfw,
       Value<String?> launched,
       Value<String?> closed,
@@ -3300,9 +3299,10 @@ class $$ChannelsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get altNames => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get altNames => $composableBuilder(
     column: $table.altNames,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get network => $composableBuilder(
@@ -3310,9 +3310,10 @@ class $$ChannelsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get owners => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get owners => $composableBuilder(
     column: $table.owners,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get country => $composableBuilder(
@@ -3330,19 +3331,22 @@ class $$ChannelsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get broadcastArea => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get broadcastArea => $composableBuilder(
     column: $table.broadcastArea,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnFilters<String> get languages => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get languages => $composableBuilder(
     column: $table.languages,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnFilters<String> get categories => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get categories => $composableBuilder(
     column: $table.categories,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<bool> get isNsfw => $composableBuilder(
@@ -3506,13 +3510,13 @@ class $$ChannelsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get altNames =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get altNames =>
       $composableBuilder(column: $table.altNames, builder: (column) => column);
 
   GeneratedColumn<String> get network =>
       $composableBuilder(column: $table.network, builder: (column) => column);
 
-  GeneratedColumn<String> get owners =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get owners =>
       $composableBuilder(column: $table.owners, builder: (column) => column);
 
   GeneratedColumn<String> get country =>
@@ -3526,18 +3530,20 @@ class $$ChannelsTableAnnotationComposer
   GeneratedColumn<String> get city =>
       $composableBuilder(column: $table.city, builder: (column) => column);
 
-  GeneratedColumn<String> get broadcastArea => $composableBuilder(
-    column: $table.broadcastArea,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<List<String>, String> get broadcastArea =>
+      $composableBuilder(
+        column: $table.broadcastArea,
+        builder: (column) => column,
+      );
 
-  GeneratedColumn<String> get languages =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get languages =>
       $composableBuilder(column: $table.languages, builder: (column) => column);
 
-  GeneratedColumn<String> get categories => $composableBuilder(
-    column: $table.categories,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<List<String>, String> get categories =>
+      $composableBuilder(
+        column: $table.categories,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<bool> get isNsfw =>
       $composableBuilder(column: $table.isNsfw, builder: (column) => column);
@@ -3598,15 +3604,15 @@ class $$ChannelsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> altNames = const Value.absent(),
+                Value<List<String>> altNames = const Value.absent(),
                 Value<String?> network = const Value.absent(),
-                Value<String> owners = const Value.absent(),
+                Value<List<String>> owners = const Value.absent(),
                 Value<String?> country = const Value.absent(),
                 Value<String?> subdivision = const Value.absent(),
                 Value<String?> city = const Value.absent(),
-                Value<String> broadcastArea = const Value.absent(),
-                Value<String> languages = const Value.absent(),
-                Value<String> categories = const Value.absent(),
+                Value<List<String>> broadcastArea = const Value.absent(),
+                Value<List<String>> languages = const Value.absent(),
+                Value<List<String>> categories = const Value.absent(),
                 Value<bool> isNsfw = const Value.absent(),
                 Value<String?> launched = const Value.absent(),
                 Value<String?> closed = const Value.absent(),
@@ -3642,15 +3648,15 @@ class $$ChannelsTableTableManager
               ({
                 required String id,
                 required String name,
-                required String altNames,
+                required List<String> altNames,
                 Value<String?> network = const Value.absent(),
-                required String owners,
+                required List<String> owners,
                 Value<String?> country = const Value.absent(),
                 Value<String?> subdivision = const Value.absent(),
                 Value<String?> city = const Value.absent(),
-                required String broadcastArea,
-                required String languages,
-                required String categories,
+                required List<String> broadcastArea,
+                required List<String> languages,
+                required List<String> categories,
                 required bool isNsfw,
                 Value<String?> launched = const Value.absent(),
                 Value<String?> closed = const Value.absent(),
@@ -3709,11 +3715,11 @@ typedef $$FeedsTableCreateCompanionBuilder =
       required String id,
       required String channelId,
       required String name,
-      required String altNames,
+      required List<String> altNames,
       required bool isMain,
-      required String broadcastArea,
-      required String timezones,
-      required String languages,
+      required List<String> broadcastArea,
+      required List<String> timezones,
+      required List<String> languages,
       Value<String?> format,
       Value<int> rowid,
     });
@@ -3722,11 +3728,11 @@ typedef $$FeedsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> channelId,
       Value<String> name,
-      Value<String> altNames,
+      Value<List<String>> altNames,
       Value<bool> isMain,
-      Value<String> broadcastArea,
-      Value<String> timezones,
-      Value<String> languages,
+      Value<List<String>> broadcastArea,
+      Value<List<String>> timezones,
+      Value<List<String>> languages,
       Value<String?> format,
       Value<int> rowid,
     });
@@ -3754,9 +3760,10 @@ class $$FeedsTableFilterComposer extends Composer<_$AppDatabase, $FeedsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get altNames => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get altNames => $composableBuilder(
     column: $table.altNames,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<bool> get isMain => $composableBuilder(
@@ -3764,19 +3771,22 @@ class $$FeedsTableFilterComposer extends Composer<_$AppDatabase, $FeedsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get broadcastArea => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get broadcastArea => $composableBuilder(
     column: $table.broadcastArea,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnFilters<String> get timezones => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get timezones => $composableBuilder(
     column: $table.timezones,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnFilters<String> get languages => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get languages => $composableBuilder(
     column: $table.languages,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get format => $composableBuilder(
@@ -3858,21 +3868,22 @@ class $$FeedsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get altNames =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get altNames =>
       $composableBuilder(column: $table.altNames, builder: (column) => column);
 
   GeneratedColumn<bool> get isMain =>
       $composableBuilder(column: $table.isMain, builder: (column) => column);
 
-  GeneratedColumn<String> get broadcastArea => $composableBuilder(
-    column: $table.broadcastArea,
-    builder: (column) => column,
-  );
+  GeneratedColumnWithTypeConverter<List<String>, String> get broadcastArea =>
+      $composableBuilder(
+        column: $table.broadcastArea,
+        builder: (column) => column,
+      );
 
-  GeneratedColumn<String> get timezones =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get timezones =>
       $composableBuilder(column: $table.timezones, builder: (column) => column);
 
-  GeneratedColumn<String> get languages =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get languages =>
       $composableBuilder(column: $table.languages, builder: (column) => column);
 
   GeneratedColumn<String> get format =>
@@ -3910,11 +3921,11 @@ class $$FeedsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> channelId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> altNames = const Value.absent(),
+                Value<List<String>> altNames = const Value.absent(),
                 Value<bool> isMain = const Value.absent(),
-                Value<String> broadcastArea = const Value.absent(),
-                Value<String> timezones = const Value.absent(),
-                Value<String> languages = const Value.absent(),
+                Value<List<String>> broadcastArea = const Value.absent(),
+                Value<List<String>> timezones = const Value.absent(),
+                Value<List<String>> languages = const Value.absent(),
                 Value<String?> format = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FeedsCompanion(
@@ -3934,11 +3945,11 @@ class $$FeedsTableTableManager
                 required String id,
                 required String channelId,
                 required String name,
-                required String altNames,
+                required List<String> altNames,
                 required bool isMain,
-                required String broadcastArea,
-                required String timezones,
-                required String languages,
+                required List<String> broadcastArea,
+                required List<String> timezones,
+                required List<String> languages,
                 Value<String?> format = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FeedsCompanion.insert(
@@ -4262,7 +4273,7 @@ typedef $$CountriesTableCreateCompanionBuilder =
     CountriesCompanion Function({
       required String code,
       required String name,
-      required String languages,
+      required List<String> languages,
       Value<String?> flag,
       Value<int> rowid,
     });
@@ -4270,7 +4281,7 @@ typedef $$CountriesTableUpdateCompanionBuilder =
     CountriesCompanion Function({
       Value<String> code,
       Value<String> name,
-      Value<String> languages,
+      Value<List<String>> languages,
       Value<String?> flag,
       Value<int> rowid,
     });
@@ -4294,9 +4305,10 @@ class $$CountriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get languages => $composableBuilder(
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get languages => $composableBuilder(
     column: $table.languages,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get flag => $composableBuilder(
@@ -4350,7 +4362,7 @@ class $$CountriesTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get languages =>
+  GeneratedColumnWithTypeConverter<List<String>, String> get languages =>
       $composableBuilder(column: $table.languages, builder: (column) => column);
 
   GeneratedColumn<String> get flag =>
@@ -4387,7 +4399,7 @@ class $$CountriesTableTableManager
               ({
                 Value<String> code = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> languages = const Value.absent(),
+                Value<List<String>> languages = const Value.absent(),
                 Value<String?> flag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CountriesCompanion(
@@ -4401,7 +4413,7 @@ class $$CountriesTableTableManager
               ({
                 required String code,
                 required String name,
-                required String languages,
+                required List<String> languages,
                 Value<String?> flag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CountriesCompanion.insert(

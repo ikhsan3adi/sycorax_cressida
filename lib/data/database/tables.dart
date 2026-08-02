@@ -1,17 +1,18 @@
 import 'package:drift/drift.dart';
+import 'package:sycorax_cressida/data/database/type_converters.dart';
 
 class Channels extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
-  TextColumn get altNames => text()();
+  TextColumn get altNames => text().map(stringListConverter)();
   TextColumn get network => text().nullable()();
-  TextColumn get owners => text()();
+  TextColumn get owners => text().map(stringListConverter)();
   TextColumn get country => text().nullable()();
   TextColumn get subdivision => text().nullable()();
   TextColumn get city => text().nullable()();
-  TextColumn get broadcastArea => text()();
-  TextColumn get languages => text()();
-  TextColumn get categories => text()();
+  TextColumn get broadcastArea => text().map(stringListConverter)();
+  TextColumn get languages => text().map(stringListConverter)();
+  TextColumn get categories => text().map(stringListConverter)();
   BoolColumn get isNsfw => boolean()();
   TextColumn get launched => text().nullable()();
   TextColumn get closed => text().nullable()();
@@ -29,11 +30,11 @@ class Feeds extends Table {
   TextColumn get id => text()();
   TextColumn get channelId => text()();
   TextColumn get name => text()();
-  TextColumn get altNames => text()();
+  TextColumn get altNames => text().map(stringListConverter)();
   BoolColumn get isMain => boolean()();
-  TextColumn get broadcastArea => text()();
-  TextColumn get timezones => text()();
-  TextColumn get languages => text()();
+  TextColumn get broadcastArea => text().map(stringListConverter)();
+  TextColumn get timezones => text().map(stringListConverter)();
+  TextColumn get languages => text().map(stringListConverter)();
   TextColumn get format => text().nullable()();
 
   @override
@@ -56,7 +57,7 @@ class Streams extends Table {
 class Countries extends Table {
   TextColumn get code => text()();
   TextColumn get name => text()();
-  TextColumn get languages => text()();
+  TextColumn get languages => text().map(stringListConverter)();
   TextColumn get flag => text().nullable()();
 
   @override

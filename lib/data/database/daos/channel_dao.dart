@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
+import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/core/utils.dart';
 import 'package:sycorax_cressida/data/database/database.dart';
-import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/models/channel.dart' as domain;
 
 class ChannelDao {
@@ -30,10 +30,10 @@ class ChannelDao {
                   filter = (filter != null) ? filter & match : match;
                 }
                 if (category != null) {
-                  final escaped = category
-                      .replaceAll('%', r'\%')
-                      .replaceAll('_', r'\_');
-                  final match = t.categories.like('%"$escaped"%');
+                  final escaped = _escapeLike(category);
+                  final match = t.categories.cast<String>().like(
+                    '%"$escaped"%',
+                  );
                   filter = (filter != null) ? filter & match : match;
                 }
                 if (hideNsfw) {
@@ -41,21 +41,17 @@ class ChannelDao {
                   filter = (filter != null) ? filter & match : match;
                 }
                 if (language != null) {
-                  final escaped = language
-                      .replaceAll('%', r'\%')
-                      .replaceAll('_', r'\_');
-                  final match = t.languages.like('%$escaped%');
+                  final escaped = _escapeLike(language);
+                  final match = t.languages.cast<String>().like('%$escaped%');
                   filter = (filter != null) ? filter & match : match;
                 }
                 if (search != null && search.isNotEmpty) {
                   final q = search.toLowerCase();
-                  final escaped = q
-                      .replaceAll('%', r'\%')
-                      .replaceAll('_', r'\_');
+                  final escaped = _escapeLike(q);
 
                   final matchId = t.id.like('$escaped%');
                   final matchName = t.name.like('%$escaped%');
-                  final matchAlt = t.altNames.like('%$escaped%');
+                  final matchAlt = t.altNames.cast<String>().like('%$escaped%');
                   final matchReplacedBy = t.replacedBy.like('%$escaped%');
 
                   final merged =
@@ -91,15 +87,15 @@ class ChannelDao {
           ChannelsCompanion.insert(
             id: ch.id,
             name: ch.name,
-            altNames: AppDatabase.toJsonArray(ch.altNames),
+            altNames: ch.altNames,
             network: Value(ch.network),
-            owners: AppDatabase.toJsonArray(ch.owners),
+            owners: ch.owners,
             country: Value(ch.country),
             subdivision: Value(ch.subdivision),
             city: Value(ch.city),
-            broadcastArea: AppDatabase.toJsonArray(ch.broadcastArea),
-            languages: AppDatabase.toJsonArray(ch.languages),
-            categories: AppDatabase.toJsonArray(ch.categories),
+            broadcastArea: ch.broadcastArea,
+            languages: ch.languages,
+            categories: ch.categories,
             isNsfw: ch.isNsfw,
             launched: Value(ch.launched),
             closed: Value(ch.closed),
@@ -159,18 +155,21 @@ class ChannelDao {
         .write(ChannelsCompanion(syncedAt: Value(now)));
   }
 
+  String _escapeLike(String value) =>
+      value.replaceAll('%', r'\%').replaceAll('_', r'\_');
+
   domain.Channel _mapRow(Channel r) => domain.Channel(
     id: r.id,
     name: r.name,
-    altNames: AppDatabase.parseJsonArray(r.altNames),
+    altNames: r.altNames,
     network: r.network,
-    owners: AppDatabase.parseJsonArray(r.owners),
+    owners: r.owners,
     country: r.country,
     subdivision: r.subdivision,
     city: r.city,
-    broadcastArea: AppDatabase.parseJsonArray(r.broadcastArea),
-    languages: AppDatabase.parseJsonArray(r.languages),
-    categories: AppDatabase.parseJsonArray(r.categories),
+    broadcastArea: r.broadcastArea,
+    languages: r.languages,
+    categories: r.categories,
     isNsfw: r.isNsfw,
     launched: r.launched,
     closed: r.closed,
