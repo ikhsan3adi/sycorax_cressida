@@ -73,6 +73,8 @@ class _MorphingShapeDecorationState extends State<MorphingShapeDecoration> {
 
   int _currentColorIndex = 0;
 
+  Timer? _delayTimer;
+
   final List<RoundedPolygon> _shapes =
       MaterialShapes.all.map((shape) => shape.normalized()).toList()..shuffle();
 
@@ -87,29 +89,32 @@ class _MorphingShapeDecorationState extends State<MorphingShapeDecoration> {
     });
   }
 
-  void _randomizeDecoration() async {
+  void _randomizeDecoration() {
     if (!mounted) return;
-    await Future.delayed(const Duration(milliseconds: 100));
+    _delayTimer?.cancel();
+    _delayTimer = Timer(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+      setState(() {
+        _currentShape = _shapes[_random.nextInt(_shapes.length)];
+        _currentColorIndex = _random.nextInt(8);
 
-    setState(() {
-      _currentShape = _shapes[_random.nextInt(_shapes.length)];
-      _currentColorIndex = _random.nextInt(8);
+        final double turnAmount =
+            _random.nextDouble() * widget.turnModifier + 0.2;
+        _currentTurns += _random.nextBool() ? turnAmount : -turnAmount;
 
-      final double turnAmount =
-          _random.nextDouble() * widget.turnModifier + 0.2;
-      _currentTurns += _random.nextBool() ? turnAmount : -turnAmount;
-
-      final int randomMilliseconds =
-          widget.randomDurationRangeMs.$1 +
-          _random.nextInt(
-            widget.randomDurationRangeMs.$2 - widget.randomDurationRangeMs.$1,
-          );
-      _rotationDuration = Duration(milliseconds: randomMilliseconds);
+        final int randomMilliseconds =
+            widget.randomDurationRangeMs.$1 +
+            _random.nextInt(
+              widget.randomDurationRangeMs.$2 - widget.randomDurationRangeMs.$1,
+            );
+        _rotationDuration = Duration(milliseconds: randomMilliseconds);
+      });
     });
   }
 
   @override
   void dispose() {
+    _delayTimer?.cancel();
     super.dispose();
   }
 
