@@ -6,8 +6,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sycorax_cressida/core/constants.dart';
 import 'package:sycorax_cressida/data/database/sqlite_setup.dart';
 
-Future<QueryExecutor> createExecutor() async {
+Future<String> resolveDbPath() async {
   final dir = await getApplicationDocumentsDirectory();
-  final file = File(p.join(dir.path, Constants.dbName));
-  return NativeDatabase.createInBackground(file, setup: configureSqlite);
+  return p.join(dir.path, Constants.dbName);
+}
+
+Future<QueryExecutor> createExecutor() async {
+  return NativeDatabase.createInBackground(
+    File(await resolveDbPath()),
+    setup: configureSqlite,
+  );
 }
