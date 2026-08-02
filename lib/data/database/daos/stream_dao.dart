@@ -26,8 +26,8 @@ class StreamDao {
   }
 
   Future<void> upsertStreams(List<domain.ChannelStream> streams) async {
-    await _db.delete(_db.streams).go();
     await _db.batch((batch) {
+      batch.deleteAll(_db.streams);
       for (final s in streams) {
         batch.insert(
           _db.streams,

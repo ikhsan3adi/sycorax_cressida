@@ -1,23 +1,28 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/data/api/mapper.dart';
 import 'package:sycorax_cressida/data/models/models.dart';
 
 class IptvClient {
   final Dio _dio;
 
-  IptvClient()
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: AppConstants.iptvApiBaseUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 30),
-        ),
-      ) {
-    _dio.interceptors.addAll([
-      _LogInterceptor(),
-      _RetryInterceptor(maxRetries: 3),
-    ]);
+  IptvClient({Dio? dio})
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              baseUrl: AppConstants.iptvApiBaseUrl,
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
+            ),
+          ) {
+    if (dio == null) {
+      _dio.interceptors.addAll([
+        _LogInterceptor(),
+        _RetryInterceptor(maxRetries: 3),
+      ]);
+    }
   }
 
   Future<List<Channel>> getChannels() async =>
@@ -45,13 +50,13 @@ class IptvClient {
     String path,
     T Function(Map<String, dynamic>) fromJson,
   ) async {
-    final response = await _dio.get(path);
-    final data = response.data;
-    if (data is! List) return [];
-    return data
-        .map((e) => e is Map<String, dynamic> ? fromJson(e) : null)
-        .whereType<T>()
-        .toList();
+    final response = await _dio.get(
+      path,
+      options: Options(responseType: ResponseType.plain),
+    );
+    final body = response.data;
+    if (body is! String) return [];
+    return mapListInIsolate(body, fromJson);
   }
 }
 
