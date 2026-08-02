@@ -12,13 +12,23 @@ class SyncService {
   SyncService({required this._channelDao, required this._runner});
 
   Future<void> syncIfNeeded() async {
+    try {
+      await _run(force: false);
+    } catch (e) {
+      log('[SYNC] background sync failed: $e');
+    }
+  }
+
+  Future<void> syncNow() => _run(force: true);
+
+  Future<void> _run({required bool force}) async {
     final inProgress = _syncInProgress;
     if (inProgress != null) {
       await inProgress;
       return;
     }
 
-    if (!await _isStale()) return;
+    if (!force && !await _isStale()) return;
 
     final inProgress2 = _syncInProgress;
     if (inProgress2 != null) {
@@ -26,8 +36,7 @@ class SyncService {
       return;
     }
 
-    final now = Utils.nowSeconds();
-    final f = _syncInBackground(now);
+    final f = _runner.runInBackground(Utils.nowSeconds());
     _syncInProgress = f;
     try {
       await f;
@@ -41,13 +50,5 @@ class SyncService {
     if (lastSync == null) return true;
     final cutoff = Utils.nowSeconds() - Constants.cacheTtlSeconds;
     return lastSync < cutoff;
-  }
-
-  Future<void> _syncInBackground(int now) async {
-    try {
-      await _runner.runInBackground(now);
-    } catch (e) {
-      log('[SYNC] background sync failed: $e');
-    }
   }
 }

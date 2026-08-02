@@ -30,6 +30,13 @@ final languageListProvider = FutureProvider<List<Language>>((ref) async {
   return repo.getLanguages();
 });
 
+void refreshHomeData(WidgetRef ref) {
+  ref.invalidate(categoryListProvider);
+  ref.invalidate(countryListProvider);
+  ref.invalidate(languageListProvider);
+  ref.read(channelListProvider.notifier).refresh();
+}
+
 final channelFeedsProvider = FutureProvider.family<List<ChannelFeed>, String>((
   ref,
   channelId,

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material3_expressive_loading_indicator/material3_expressive_loading_indicator.dart';
 import 'package:material_new_shapes/material_new_shapes.dart';
 import 'package:sycorax_cressida/shared/paintings/morphing_shape_border.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sycorax_cressida/core/constants.dart';
+import 'package:sycorax_cressida/data/providers.dart';
+import 'package:sycorax_cressida/features/home/providers/channel_list_provider.dart';
 import 'package:sycorax_cressida/features/settings/providers/settings_provider.dart';
 import 'package:sycorax_cressida/features/settings/providers/theme_mode_provider.dart';
 import 'package:sycorax_cressida/features/settings/widgets/widgets.dart';
@@ -95,6 +98,7 @@ class SettingsScreen extends ConsumerWidget {
           }
         },
       ),
+      const _SyncNowTile(),
       ListTile(
         leading: const CircleAvatar(child: Icon(Icons.info)),
         title: const Text('About'),
@@ -165,6 +169,56 @@ class SettingsScreen extends ConsumerWidget {
     _DonationLink(name: 'Saweria', url: 'https://saweria.co/xiboxann'),
     _DonationLink(name: 'Trakteer', url: 'https://trakteer.id/ikhsan3adi/tip'),
   ];
+}
+
+class _SyncNowTile extends ConsumerStatefulWidget {
+  const _SyncNowTile();
+
+  @override
+  ConsumerState<_SyncNowTile> createState() => _SyncNowTileState();
+}
+
+class _SyncNowTileState extends ConsumerState<_SyncNowTile> {
+  bool _syncing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: CircleAvatar(
+        child: _syncing
+            ? ExpressiveLoadingIndicator(
+                color: theme.colorScheme.onPrimaryContainer,
+              )
+            : const Icon(Icons.sync),
+      ),
+      title: Text(_syncing ? 'Syncing...' : 'Sync Now'),
+      subtitle: const Text(
+        'Force a full data refresh, bypassing the 24-hour cache.',
+      ),
+      onTap: _syncing ? null : _handleSyncNow,
+      enabled: !_syncing,
+    );
+  }
+
+  Future<void> _handleSyncNow() async {
+    setState(() => _syncing = true);
+    try {
+      await ref.read(syncServiceProvider).syncNow();
+      refreshHomeData(ref);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Sync complete')));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sync failed: $e')));
+    } finally {
+      if (mounted) setState(() => _syncing = false);
+    }
+  }
 }
 
 class _DonationLink {

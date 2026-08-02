@@ -19,6 +19,13 @@ class _FakeSyncRunner extends SyncRunner {
   }
 }
 
+class _FailingSyncRunner extends SyncRunner {
+  @override
+  Future<void> runInBackground(int now) async {
+    throw Exception('sync boom');
+  }
+}
+
 AppDatabase _createDb() => AppDatabase(NativeDatabase.memory());
 
 void main() {
@@ -70,6 +77,33 @@ void main() {
       ];
       await Future.wait(calls);
       expect(runner.runCount, 1);
+    });
+  });
+
+  group('syncNow', () {
+    test('runs sync even when data is fresh', () async {
+      await channelDao.upsertChannels([
+        const models.Channel(id: 'C1', name: 'Test'),
+      ]);
+      await channelDao.setSyncTime(Utils.nowSeconds());
+
+      await service.syncNow();
+      expect(runner.runCount, 1);
+    });
+
+    test('concurrent calls share the same future', () async {
+      final calls = [service.syncNow(), service.syncNow(), service.syncNow()];
+      await Future.wait(calls);
+      expect(runner.runCount, 1);
+    });
+
+    test('propagates sync errors', () async {
+      final failing = SyncService(
+        channelDao: channelDao,
+        runner: _FailingSyncRunner(),
+      );
+
+      await expectLater(failing.syncNow(), throwsA(isA<Exception>()));
     });
   });
 }
