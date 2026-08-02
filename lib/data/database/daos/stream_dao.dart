@@ -6,13 +6,11 @@ class StreamDao {
   final db.AppDatabase _db;
   StreamDao(this._db);
 
-  Future<List<domain.ChannelStream>> getStreams(String? feedId) async {
-    if (feedId == null) return [];
+  Future<List<domain.ChannelStream>> getStreams(String feedId) async {
     final rows = await (_db.select(
       _db.streams,
     )..where((t) => t.feedId.equals(feedId))).get();
-    final seen = <String>{};
-    return rows.where((r) => seen.add(r.url)).map(_mapRow).toList();
+    return _dedupe(rows).map(_mapRow).toList();
   }
 
   Future<List<domain.ChannelStream>> getStreamsByChannel(
@@ -21,30 +19,36 @@ class StreamDao {
     final rows = await (_db.select(
       _db.streams,
     )..where((t) => t.channelId.equals(channelId))).get();
-    final seen = <String>{};
-    return rows.where((r) => seen.add(r.url)).map(_mapRow).toList();
+    return _dedupe(rows).map(_mapRow).toList();
   }
 
   Future<void> upsertStreams(List<domain.ChannelStream> streams) async {
-    await _db.batch((batch) {
-      batch.deleteAll(_db.streams);
-      for (final s in streams) {
-        batch.insert(
-          _db.streams,
-          db.StreamsCompanion.insert(
-            channelId: s.channelId,
-            feedId: drift.Value(s.feedId),
-            title: s.title,
-            url: s.url,
-            referrer: drift.Value(s.referrer),
-            userAgent: drift.Value(s.userAgent),
-            quality: drift.Value(s.quality),
-            label: drift.Value(s.label),
-            status: drift.Value(s.status),
-          ),
-        );
-      }
+    await _db.transaction(() async {
+      await _db.batch((batch) {
+        batch.deleteAll(_db.streams);
+        for (final s in streams) {
+          batch.insert(
+            _db.streams,
+            db.StreamsCompanion.insert(
+              channelId: s.channelId,
+              feedId: drift.Value(s.feedId),
+              title: s.title,
+              url: s.url,
+              referrer: drift.Value(s.referrer),
+              userAgent: drift.Value(s.userAgent),
+              quality: drift.Value(s.quality),
+              label: drift.Value(s.label),
+              status: drift.Value(s.status),
+            ),
+          );
+        }
+      });
     });
+  }
+
+  List<db.Stream> _dedupe(List<db.Stream> rows) {
+    final seen = <String>{};
+    return rows.where((r) => seen.add(r.url)).toList();
   }
 
   domain.ChannelStream _mapRow(db.Stream r) => domain.ChannelStream(
