@@ -80,9 +80,10 @@ class BrowseFilters extends ConsumerWidget {
 
     return itemsAsync.when(
       data: (items) {
-        if (items.indexWhere((e) => valueBuilder(e) == value) == -1) {
+        if (value != null &&
+            items.indexWhere((e) => valueBuilder(e) == value) == -1) {
           value = null;
-          Future(() => onSelected(value));
+          Future(() => onSelected(null));
         }
         return DropdownButtonFormField<String>(
           initialValue: value,
