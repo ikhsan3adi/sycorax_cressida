@@ -9,17 +9,12 @@ import 'package:sycorax_cressida/data/sync/sync_service.dart';
 
 class _FakeSyncRunner extends SyncRunner {
   int runCount = 0;
-  String? lastDbPath;
   int? lastNow;
 
   @override
-  Future<String> resolveDbPath() async => ':memory:';
-
-  @override
-  Future<void> runInBackground(String dbPath, int now) async {
+  Future<void> runInBackground(int now) async {
     await Future<void>.delayed(Duration.zero);
     runCount++;
-    lastDbPath = dbPath;
     lastNow = now;
   }
 }

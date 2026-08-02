@@ -45,8 +45,7 @@ class SyncService {
 
   Future<void> _syncInBackground(int now) async {
     try {
-      final dbPath = await _runner.resolveDbPath();
-      await _runner.runInBackground(dbPath, now);
+      await _runner.runInBackground(now);
     } catch (e) {
       log('[SYNC] background sync failed: $e');
     }

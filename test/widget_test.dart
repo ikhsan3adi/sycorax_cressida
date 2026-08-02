@@ -12,10 +12,7 @@ import 'package:sycorax_cressida/data/sync/sync_runner.dart';
 
 class _NoopSyncRunner extends SyncRunner {
   @override
-  Future<String> resolveDbPath() async => ':memory:';
-
-  @override
-  Future<void> runInBackground(String dbPath, int now) async {}
+  Future<void> runInBackground(int now) async {}
 }
 
 void main() {
